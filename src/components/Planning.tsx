@@ -34,8 +34,8 @@ export function Planning({ dossiers, onSelectDossier, displayMode }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-slate-800">Planning — 3 semaines</h2>
-        <div className="flex flex-wrap gap-3 text-xs text-slate-600">
+        <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Planning — 3 semaines</h2>
+        <div className="flex flex-wrap gap-3 text-xs text-slate-600 dark:text-slate-400">
           {(Object.keys(EVENEMENT_STYLE) as (keyof typeof EVENEMENT_STYLE)[]).map((type) => (
             <span key={type} className="flex items-center gap-1.5">
               <span className={`w-2.5 h-2.5 rounded-sm ${EVENEMENT_STYLE[type].bg}`} />
@@ -55,13 +55,15 @@ export function Planning({ dossiers, onSelectDossier, displayMode }: Props) {
               return (
                 <div
                   key={cle}
-                  className={`rounded-lg border px-2 py-2 min-h-24 bg-white ${
-                    aujourdhui ? 'border-indigo-400 ring-1 ring-indigo-300' : 'border-slate-200'
+                  className={`rounded-lg border px-2 py-2 min-h-24 bg-white dark:bg-slate-800 ${
+                    aujourdhui
+                      ? 'border-indigo-400 dark:border-indigo-500 ring-1 ring-indigo-300 dark:ring-indigo-700'
+                      : 'border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   <div
                     className={`text-xs font-semibold mb-1.5 flex items-center justify-between ${
-                      aujourdhui ? 'text-indigo-600' : 'text-slate-500'
+                      aujourdhui ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400'
                     }`}
                   >
                     <span className="capitalize">{format(jour, 'EEE dd MMM', { locale: fr })}</span>
@@ -82,7 +84,7 @@ export function Planning({ dossiers, onSelectDossier, displayMode }: Props) {
                         </button>
                       )
                     })}
-                    {evs.length === 0 && <div className="text-[11px] text-slate-300 select-none">—</div>}
+                    {evs.length === 0 && <div className="text-[11px] text-slate-300 dark:text-slate-600 select-none">—</div>}
                   </div>
                 </div>
               )

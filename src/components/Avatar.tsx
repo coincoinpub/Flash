@@ -6,7 +6,7 @@ export function Avatar({ membre, size = 'md' }: { membre: Membre | null | undefi
   if (!membre) {
     return (
       <div
-        className={`${dims} rounded-full border border-dashed border-slate-300 flex items-center justify-center text-slate-400 shrink-0`}
+        className={`${dims} rounded-full border border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center text-slate-400 dark:text-slate-500 shrink-0`}
         title="Non assigné"
       >
         ?

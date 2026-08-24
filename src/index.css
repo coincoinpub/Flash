@@ -1,7 +1,13 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 body {
@@ -10,6 +16,11 @@ body {
     'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   background: #f4f5f7;
   color: #1f2430;
+}
+
+.dark body {
+  background: #0f1115;
+  color: #e2e4e9;
 }
 
 * {
@@ -23,6 +34,9 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #3f4451;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
