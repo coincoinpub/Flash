@@ -1,0 +1,72 @@
+export type Statut =
+  | 'nouveau'
+  | 'devis_a_faire'
+  | 'devis_en_cours'
+  | 'pao_a_faire'
+  | 'pao_en_cours'
+  | 'a_imprimer'
+  | 'pret'
+  | 'a_facturer'
+  | 'livre'
+
+export const STATUTS: Statut[] = [
+  'nouveau',
+  'devis_a_faire',
+  'devis_en_cours',
+  'pao_a_faire',
+  'pao_en_cours',
+  'a_imprimer',
+  'pret',
+  'a_facturer',
+  'livre',
+]
+
+export const STATUT_LABEL: Record<Statut, string> = {
+  nouveau: 'Nouveau',
+  devis_a_faire: 'Devis à faire',
+  devis_en_cours: 'Devis en cours',
+  pao_a_faire: 'PAO à faire',
+  pao_en_cours: 'PAO en cours',
+  a_imprimer: 'À imprimer',
+  pret: 'Prêt',
+  a_facturer: 'À facturer',
+  livre: 'Livré',
+}
+
+export type Pole = 'impression' | 'signaletique'
+export type RoleEquipe = 'commercial' | 'pao' | 'atelier'
+
+export interface Membre {
+  id: string
+  nom: string
+  initiales: string
+  role: RoleEquipe
+  pole: Pole | 'atelier'
+  couleur: string
+}
+
+export interface Rdv {
+  date: string // yyyy-MM-dd
+  heure: string // HH:mm
+}
+
+export interface Dossier {
+  id: string
+  reference: string // DE0862
+  numeroClient: string // 112785
+  client: string
+  job: string
+  statut: Statut
+  date: string // yyyy-MM-dd — date de création / dossier
+  commercialId: string | null
+  paoId: string | null
+  atelierId: string | null
+  rdv: Rdv | null
+  dateImpression: string | null
+  dateLivraison: string | null
+  deadline: string | null
+  poseExt: string | null
+  poseInt: string | null
+  commentaire: string
+  enChargeId: string | null
+}
