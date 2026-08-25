@@ -38,7 +38,6 @@ export function DossierCard({ dossier, assignes, onClick, onDragStart, onDragEnd
           dragging ? 'opacity-40' : ''
         } ${displayMode ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'}`}
       >
-        <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 shrink-0">{dossier.reference || '—'}</span>
         <span className="text-xs text-slate-700 dark:text-slate-300 truncate flex-1">{dossier.client}</span>
         <AvatarStack membres={assignes} size="sm" />
       </button>
@@ -56,11 +55,10 @@ export function DossierCard({ dossier, assignes, onClick, onDragStart, onDragEnd
         dragging ? 'opacity-40' : ''
       } ${displayMode ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'}`}
     >
-      <div className="flex items-start justify-between gap-2">
-        <span className="font-mono text-[11px] font-semibold text-slate-500 dark:text-slate-400">{dossier.reference}</span>
+      <div className="flex items-start justify-end gap-2">
         <AvatarStack membres={assignes} size="sm" />
       </div>
-      <div className="font-semibold text-slate-800 dark:text-slate-100 text-base mt-1 leading-snug">{dossier.client}</div>
+      <div className="font-semibold text-slate-800 dark:text-slate-100 text-lg mt-1 leading-snug">{dossier.client}</div>
       <div className="text-slate-500 dark:text-slate-400 text-sm mt-0.5 leading-snug">{dossier.job}</div>
       <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
         <span className="text-slate-400 dark:text-slate-500 text-[11px]">{format(parseISO(dossier.date), 'dd MMM', { locale: fr })}</span>

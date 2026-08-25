@@ -98,7 +98,7 @@ function App() {
             <button
               type="button"
               onClick={() => setEquipeOuverte(true)}
-              className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded p-1"
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded p-1"
               aria-label="Gérer l'équipe"
               title="Gérer l'équipe"
             >
