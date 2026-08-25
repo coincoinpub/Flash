@@ -20,6 +20,19 @@ interface GapCible {
   index: number
 }
 
+function assignesDe(dossier: Dossier, membresParId: Record<string, Membre>): Membre[] {
+  const ids = [...dossier.commercialIds, ...dossier.paoIds, ...dossier.atelierIds]
+  const vus = new Set<string>()
+  const membres: Membre[] = []
+  for (const id of ids) {
+    if (vus.has(id)) continue
+    vus.add(id)
+    const m = membresParId[id]
+    if (m) membres.push(m)
+  }
+  return membres
+}
+
 function DropGap({
   isOver,
   onDragOver,
@@ -99,7 +112,7 @@ export function KanbanColumn({
                   {items[i] && (
                     <DossierCard
                       dossier={items[i]}
-                      enCharge={items[i].enChargeId ? (membresParId[items[i].enChargeId as string] ?? null) : null}
+                      assignes={assignesDe(items[i], membresParId)}
                       onClick={() => onCardClick(items[i])}
                       onDragStart={(e) => {
                         onDragStart(items[i].id)

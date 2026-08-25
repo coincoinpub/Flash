@@ -24,3 +24,17 @@ export function Avatar({ membre, size = 'md' }: { membre: Membre | null | undefi
     </div>
   )
 }
+
+/** Pile de pastilles avatar qui se chevauchent — affiche tous les membres assignés. */
+export function AvatarStack({ membres, size = 'sm' }: { membres: Membre[]; size?: 'sm' | 'md' | 'lg' }) {
+  if (membres.length === 0) return <Avatar membre={null} size={size} />
+  return (
+    <div className="flex items-center -space-x-1.5 shrink-0">
+      {membres.map((m) => (
+        <div key={m.id} className="ring-2 ring-white dark:ring-slate-800 rounded-full">
+          <Avatar membre={m} size={size} />
+        </div>
+      ))}
+    </div>
+  )
+}

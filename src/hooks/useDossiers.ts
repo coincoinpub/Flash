@@ -60,10 +60,9 @@ export function useDossiers() {
     setDossiers((prev) =>
       prev.map((d) => ({
         ...d,
-        commercialId: d.commercialId === membreId ? null : d.commercialId,
-        paoId: d.paoId === membreId ? null : d.paoId,
-        atelierId: d.atelierId === membreId ? null : d.atelierId,
-        enChargeId: d.enChargeId === membreId ? null : d.enChargeId,
+        commercialIds: d.commercialIds.filter((id) => id !== membreId),
+        paoIds: d.paoIds.filter((id) => id !== membreId),
+        atelierIds: d.atelierIds.filter((id) => id !== membreId),
       })),
     )
   }, [])

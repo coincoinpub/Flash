@@ -12,9 +12,9 @@ export function construireNouveauDossier(dossiers: Dossier[]): Dossier {
     statut: 'devis_a_faire',
     ordre: ordresDevis.length > 0 ? Math.min(...ordresDevis) - 1 : 0,
     date: format(new Date(), 'yyyy-MM-dd'),
-    commercialId: null,
-    paoId: null,
-    atelierId: null,
+    commercialIds: [],
+    paoIds: [],
+    atelierIds: [],
     rdv: null,
     dateImpression: null,
     dateImpressionMoment: 'matin',
@@ -31,6 +31,5 @@ export function construireNouveauDossier(dossiers: Dossier[]): Dossier {
     poseIntMoment: 'apres_midi',
     poseIntInfo: '',
     commentaire: '',
-    enChargeId: null,
   }
 }

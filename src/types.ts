@@ -60,9 +60,9 @@ export interface Dossier {
   statut: Statut
   ordre: number // position manuelle dans sa colonne/groupe de statut
   date: string // yyyy-MM-dd — date de création / dossier
-  commercialId: string | null
-  paoId: string | null
-  atelierId: string | null
+  commercialIds: string[]
+  paoIds: string[]
+  atelierIds: string[]
   rdv: Rdv | null
   dateImpression: string | null
   dateImpressionMoment: Moment
@@ -79,5 +79,4 @@ export interface Dossier {
   poseIntMoment: Moment
   poseIntInfo: string
   commentaire: string
-  enChargeId: string | null
 }

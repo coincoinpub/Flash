@@ -17,38 +17,39 @@ interface Props {
   onDelete: () => void
 }
 
-function AssignSelect({
+function AssignMulti({
   label,
   role,
   membres,
-  value,
+  values,
   onChange,
 }: {
   label: string
   role: Membre['role']
   membres: Membre[]
-  value: string | null
-  onChange: (id: string | null) => void
+  values: string[]
+  onChange: (ids: string[]) => void
 }) {
   const options = membres.filter((m) => m.role === role)
-  const selected = options.find((m) => m.id === value) ?? null
+  const toggle = (id: string, coche: boolean) => {
+    onChange(coche ? [...values, id] : values.filter((v) => v !== id))
+  }
   return (
     <div>
       <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{label}</label>
-      <div className="flex items-center gap-2 mt-1">
-        <Avatar membre={selected} />
-        <select
-          className="flex-1 border border-slate-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
-          value={value ?? ''}
-          onChange={(e) => onChange(e.target.value || null)}
-        >
-          <option value="">Non assigné</option>
-          {options.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.nom}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-wrap gap-x-3 gap-y-1.5 mt-1.5">
+        {options.length === 0 && <span className="text-xs text-slate-400 dark:text-slate-500 italic">Aucun membre</span>}
+        {options.map((m) => (
+          <label key={m.id} className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={values.includes(m.id)}
+              onChange={(e) => toggle(m.id, e.target.checked)}
+            />
+            <Avatar membre={m} size="sm" />
+            {m.nom}
+          </label>
+        ))}
       </div>
     </div>
   )
@@ -282,26 +283,26 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate, onArchive, 
 
           <div className="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
             <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Qui fait quoi</div>
-            <AssignSelect
+            <AssignMulti
               label="Commercial"
               role="commercial"
               membres={membres}
-              value={dossier.commercialId}
-              onChange={(id) => onUpdate({ commercialId: id })}
+              values={dossier.commercialIds}
+              onChange={(commercialIds) => onUpdate({ commercialIds })}
             />
-            <AssignSelect
+            <AssignMulti
               label="PAO"
               role="pao"
               membres={membres}
-              value={dossier.paoId}
-              onChange={(id) => onUpdate({ paoId: id })}
+              values={dossier.paoIds}
+              onChange={(paoIds) => onUpdate({ paoIds })}
             />
-            <AssignSelect
+            <AssignMulti
               label="Atelier"
               role="atelier"
               membres={membres}
-              value={dossier.atelierId}
-              onChange={(id) => onUpdate({ atelierId: id })}
+              values={dossier.atelierIds}
+              onChange={(atelierIds) => onUpdate({ atelierIds })}
             />
           </div>
 

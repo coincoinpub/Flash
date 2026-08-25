@@ -3,11 +3,11 @@ import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import type { Dossier, Membre } from '../types'
 import { construireEvenements, EVENEMENT_STYLE } from '../lib/planning'
-import { Avatar } from './Avatar'
+import { AvatarStack } from './Avatar'
 
 interface Props {
   dossier: Dossier
-  enCharge: Membre | null
+  assignes: Membre[]
   onClick: () => void
   onDragStart: (e: React.DragEvent) => void
   onDragEnd: () => void
@@ -16,7 +16,7 @@ interface Props {
   compact?: boolean
 }
 
-export function DossierCard({ dossier, enCharge, onClick, onDragStart, onDragEnd, dragging, displayMode, compact }: Props) {
+export function DossierCard({ dossier, assignes, onClick, onDragStart, onDragEnd, dragging, displayMode, compact }: Props) {
   // Prochaine échéance planning du dossier (RDV, deadline, pose, livraison…) — recalculée à
   // chaque changement de dossier, pour que la carte reflète immédiatement les dates modifiées
   // dans la fiche détail plutôt que de rester figée sur la seule date de création.
@@ -40,7 +40,7 @@ export function DossierCard({ dossier, enCharge, onClick, onDragStart, onDragEnd
       >
         <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 shrink-0">{dossier.reference || '—'}</span>
         <span className="text-xs text-slate-700 dark:text-slate-300 truncate flex-1">{dossier.client}</span>
-        <Avatar membre={enCharge} size="sm" />
+        <AvatarStack membres={assignes} size="sm" />
       </button>
     )
   }
@@ -58,7 +58,7 @@ export function DossierCard({ dossier, enCharge, onClick, onDragStart, onDragEnd
     >
       <div className="flex items-start justify-between gap-2">
         <span className="font-mono text-[11px] font-semibold text-slate-500 dark:text-slate-400">{dossier.reference}</span>
-        <Avatar membre={enCharge} size="sm" />
+        <AvatarStack membres={assignes} size="sm" />
       </div>
       <div className="font-semibold text-slate-800 dark:text-slate-100 text-base mt-1 leading-snug">{dossier.client}</div>
       <div className="text-slate-500 dark:text-slate-400 text-sm mt-0.5 leading-snug">{dossier.job}</div>

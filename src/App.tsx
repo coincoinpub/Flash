@@ -25,10 +25,9 @@ function App() {
     if (!filtreMembreId) return dossiers
     return dossiers.filter(
       (d) =>
-        d.commercialId === filtreMembreId ||
-        d.paoId === filtreMembreId ||
-        d.atelierId === filtreMembreId ||
-        d.enChargeId === filtreMembreId,
+        d.commercialIds.includes(filtreMembreId) ||
+        d.paoIds.includes(filtreMembreId) ||
+        d.atelierIds.includes(filtreMembreId),
     )
   }, [dossiers, filtreMembreId])
 
