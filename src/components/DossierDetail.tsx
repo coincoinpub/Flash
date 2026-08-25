@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Dossier, Membre, Statut } from '../types'
 import { STATUT_LABEL, STATUTS } from '../types'
 import { COULEUR_CLASSES, STATUT_COULEUR } from '../lib/statutConfig'
+import { construireEvenements, EVENEMENT_STYLE, libelleEvenement, patchInfoEvenement, placeholderInfo } from '../lib/planning'
 import { Avatar } from './Avatar'
+import { EditableLine } from './EditableLine'
 
 interface Props {
   dossier: Dossier
@@ -80,15 +82,27 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
   }
 
   const couleur = COULEUR_CLASSES[STATUT_COULEUR[dossier.statut]]
+  // Évènements planning de ce dossier (hors Job et RDV, déjà éditables plus haut dans la fiche).
+  const evenementsPlanning = useMemo(
+    () => construireEvenements([dossier]).filter((ev) => ev.type !== 'impression' && ev.type !== 'rdv'),
+    [dossier],
+  )
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-slate-900/40 dark:bg-black/60" onClick={onClose} />
       <div className="relative w-full max-w-md bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col animate-[slidein_0.15s_ease-out]">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
-          <div>
+          <div className="min-w-0">
             <div className="font-mono text-sm text-slate-500 dark:text-slate-400">{dossier.reference}</div>
-            <div className="text-lg font-semibold text-slate-800 dark:text-slate-100">{dossier.client}</div>
+            <EditableLine
+              value={dossier.client}
+              onSave={(client) => onUpdate({ client })}
+              alwaysVisiblePencil
+              textClassName="text-lg font-semibold text-slate-800 dark:text-slate-100"
+              inputClassName="text-lg font-semibold border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
+              pencilClassName="text-slate-400 dark:text-slate-500"
+            />
           </div>
           <button
             type="button"
@@ -102,7 +116,14 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
           <div>
-            <div className="text-sm text-slate-600 dark:text-slate-400">{dossier.job}</div>
+            <EditableLine
+              value={dossier.job}
+              onSave={(job) => onUpdate({ job })}
+              alwaysVisiblePencil
+              textClassName="text-sm text-slate-600 dark:text-slate-400"
+              inputClassName="w-full text-sm border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
+              pencilClassName="text-slate-400 dark:text-slate-500"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-sm">
@@ -206,6 +227,32 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
               )}
             </div>
           </div>
+
+          {evenementsPlanning.length > 0 && (
+            <div className="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
+              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Planning</div>
+              {evenementsPlanning.map((ev) => {
+                const style = EVENEMENT_STYLE[ev.type]
+                return (
+                  <div key={ev.id}>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      <span className={`w-2 h-2 rounded-sm ${style.bg}`} />
+                      {libelleEvenement(ev)}
+                    </div>
+                    <EditableLine
+                      value={ev.info}
+                      placeholder={placeholderInfo(ev.type)}
+                      onSave={(valeur) => onUpdate(patchInfoEvenement(ev, valeur))}
+                      alwaysVisiblePencil
+                      textClassName="text-sm text-slate-700 dark:text-slate-300"
+                      inputClassName="w-full text-sm border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
+                      pencilClassName="text-slate-400 dark:text-slate-500"
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          )}
 
           <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
             <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Commentaire</label>

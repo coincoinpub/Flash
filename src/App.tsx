@@ -98,16 +98,10 @@ function App() {
           membresParId={membresParId}
           onMove={moveDossier}
           onCardClick={(d) => setSelectedId(d.id)}
-          onUpdateDossier={updateDossier}
           displayMode={displayMode}
         />
 
-        <Planning
-          dossiers={dossiersFiltres}
-          onSelectDossier={(d) => setSelectedId(d.id)}
-          onUpdateDossier={updateDossier}
-          displayMode={displayMode}
-        />
+        <Planning dossiers={dossiersFiltres} onSelectDossier={(d) => setSelectedId(d.id)} displayMode={displayMode} />
       </main>
 
       {selectedDossier && (

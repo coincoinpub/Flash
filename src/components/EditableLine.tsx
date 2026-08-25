@@ -7,6 +7,8 @@ interface Props {
   textClassName?: string
   inputClassName?: string
   pencilClassName?: string
+  /** Crayon toujours visible (pas seulement au survol). */
+  alwaysVisiblePencil?: boolean
 }
 
 function PencilIcon({ className }: { className?: string }) {
@@ -30,6 +32,7 @@ export function EditableLine({
   textClassName = '',
   inputClassName = '',
   pencilClassName = '',
+  alwaysVisiblePencil = false,
 }: Props) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
@@ -88,7 +91,9 @@ export function EditableLine({
         draggable={false}
         onClick={startEdit}
         onMouseDown={(e) => e.stopPropagation()}
-        className={`shrink-0 opacity-0 group-hover/line:opacity-100 focus:opacity-100 transition rounded p-0.5 hover:bg-black/10 ${pencilClassName}`}
+        className={`shrink-0 transition rounded p-0.5 hover:bg-black/10 ${
+          alwaysVisiblePencil ? 'opacity-60 hover:opacity-100' : 'opacity-0 group-hover/line:opacity-100 focus:opacity-100'
+        } ${pencilClassName}`}
         aria-label="Modifier"
       >
         <PencilIcon className="w-3 h-3" />

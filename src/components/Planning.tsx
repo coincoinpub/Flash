@@ -2,56 +2,29 @@ import { useMemo } from 'react'
 import { addDays, format, getDay, isToday, startOfWeek } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import type { Dossier, Moment } from '../types'
-import { construireEvenements, EVENEMENT_STYLE, libelleEvenement, patchInfoEvenement, placeholderInfo } from '../lib/planning'
+import { construireEvenements, EVENEMENT_STYLE, libelleEvenement } from '../lib/planning'
 import type { Evenement } from '../lib/planning'
-import { EditableLine } from './EditableLine'
 
 interface Props {
   dossiers: Dossier[]
   onSelectDossier: (dossier: Dossier) => void
-  onUpdateDossier: (id: string, patch: Partial<Dossier>) => void
   displayMode: boolean
 }
 
 const PLACES_PAR_DEMI_JOURNEE = 4
 
-function EvenementChip({
-  ev,
-  onSelectDossier,
-  onUpdateDossier,
-}: {
-  ev: Evenement
-  onSelectDossier: (dossier: Dossier) => void
-  onUpdateDossier: (id: string, patch: Partial<Dossier>) => void
-}) {
+function EvenementChip({ ev, onSelectDossier }: { ev: Evenement; onSelectDossier: (dossier: Dossier) => void }) {
   const style = EVENEMENT_STYLE[ev.type]
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       onClick={() => onSelectDossier(ev.dossier)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') onSelectDossier(ev.dossier)
-      }}
       className={`w-full text-left rounded px-1.5 py-1 mb-1 cursor-pointer ${style.bg} ${style.text}`}
     >
       <div className="text-[9px] font-semibold uppercase tracking-wide opacity-90 truncate">{libelleEvenement(ev)}</div>
-      <EditableLine
-        value={ev.client}
-        onSave={(client) => onUpdateDossier(ev.dossier.id, { client })}
-        textClassName="text-[11px] font-bold leading-tight"
-        inputClassName="w-full text-[11px] font-bold leading-tight rounded px-1 py-0.5 text-slate-900"
-        pencilClassName="opacity-80"
-      />
-      <EditableLine
-        value={ev.info}
-        placeholder={placeholderInfo(ev.type)}
-        onSave={(valeur) => onUpdateDossier(ev.dossier.id, patchInfoEvenement(ev, valeur))}
-        textClassName="text-[10px] leading-tight opacity-90"
-        inputClassName="w-full text-[10px] leading-tight rounded px-1 py-0.5 text-slate-900"
-        pencilClassName="opacity-80"
-      />
-    </div>
+      <div className="text-[11px] font-bold leading-tight truncate">{ev.client}</div>
+      {ev.info && <div className="text-[10px] leading-tight opacity-90 truncate">{ev.info}</div>}
+    </button>
   )
 }
 
@@ -60,13 +33,11 @@ function DemiJournee({
   evenements,
   zoneTampon,
   onSelectDossier,
-  onUpdateDossier,
 }: {
   label: string
   evenements: Evenement[]
   zoneTampon: boolean
   onSelectDossier: (dossier: Dossier) => void
-  onUpdateDossier: (id: string, patch: Partial<Dossier>) => void
 }) {
   const places = Array.from({ length: PLACES_PAR_DEMI_JOURNEE }, (_, i) => evenements[i] ?? null)
   const overflow = evenements.length - PLACES_PAR_DEMI_JOURNEE
@@ -83,7 +54,7 @@ function DemiJournee({
       </div>
       {places.map((ev, i) =>
         ev ? (
-          <EvenementChip key={ev.id} ev={ev} onSelectDossier={onSelectDossier} onUpdateDossier={onUpdateDossier} />
+          <EvenementChip key={ev.id} ev={ev} onSelectDossier={onSelectDossier} />
         ) : (
           <div key={i} className="h-3.5 mb-1 border-b border-dashed border-slate-200 dark:border-slate-700/70" />
         ),
@@ -95,7 +66,7 @@ function DemiJournee({
   )
 }
 
-export function Planning({ dossiers, onSelectDossier, onUpdateDossier, displayMode }: Props) {
+export function Planning({ dossiers, onSelectDossier, displayMode }: Props) {
   const evenements = useMemo(() => construireEvenements(dossiers), [dossiers])
 
   const semaines = useMemo(() => {
@@ -163,14 +134,12 @@ export function Planning({ dossiers, onSelectDossier, onUpdateDossier, displayMo
                       evenements={evenementsDuCreneau(cle, 'matin')}
                       zoneTampon={false}
                       onSelectDossier={onSelectDossier}
-                      onUpdateDossier={onUpdateDossier}
                     />
                     <DemiJournee
                       label="Après-midi"
                       evenements={evenementsDuCreneau(cle, 'apres_midi')}
                       zoneTampon={estVendredi}
                       onSelectDossier={onSelectDossier}
-                      onUpdateDossier={onUpdateDossier}
                     />
                   </div>
                 </div>
