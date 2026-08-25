@@ -1,36 +1,30 @@
 export type Statut =
-  | 'nouveau'
   | 'devis_a_faire'
   | 'devis_en_cours'
   | 'pao_a_faire'
   | 'pao_en_cours'
   | 'a_imprimer'
-  | 'pret'
   | 'a_facturer'
   | 'livre'
   | 'archive'
 
 export const STATUTS: Statut[] = [
-  'nouveau',
   'devis_a_faire',
   'devis_en_cours',
   'pao_a_faire',
   'pao_en_cours',
   'a_imprimer',
-  'pret',
   'a_facturer',
   'livre',
   'archive',
 ]
 
 export const STATUT_LABEL: Record<Statut, string> = {
-  nouveau: 'Nouveau',
   devis_a_faire: 'Devis à faire',
   devis_en_cours: 'Devis en cours',
   pao_a_faire: 'PAO à faire',
   pao_en_cours: 'PAO en cours',
   a_imprimer: 'À imprimer',
-  pret: 'Prêt',
   a_facturer: 'À facturer',
   livre: 'Livré',
   archive: 'Archivé',

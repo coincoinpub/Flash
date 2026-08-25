@@ -19,11 +19,11 @@ function EvenementChip({ ev, onSelectDossier }: { ev: Evenement; onSelectDossier
     <button
       type="button"
       onClick={() => onSelectDossier(ev.dossier)}
-      className={`w-full text-left rounded px-1.5 py-1.5 mb-1 cursor-pointer ${style.bg} ${style.text}`}
+      className={`w-full text-left rounded px-2 py-2 mb-1 cursor-pointer ${style.bg} ${style.text}`}
     >
-      <div className="text-[10px] font-semibold uppercase tracking-wide opacity-90 truncate">{libelleEvenement(ev)}</div>
-      <div className="text-[13px] font-bold leading-tight truncate">{ev.client}</div>
-      {ev.info && <div className="text-[11px] leading-tight opacity-90 truncate">{ev.info}</div>}
+      <div className="text-[11px] font-semibold uppercase tracking-wide opacity-90 truncate">{libelleEvenement(ev)}</div>
+      <div className="text-base font-bold leading-tight truncate">{ev.client}</div>
+      {ev.info && <div className="text-sm leading-tight opacity-90 truncate">{ev.info}</div>}
     </button>
   )
 }
@@ -43,11 +43,17 @@ function DemiJournee({
   const overflow = evenements.length - PLACES_PAR_DEMI_JOURNEE
 
   return (
-    <div className={`rounded-md px-1 py-1 ${zoneTampon ? 'bg-slate-100 dark:bg-slate-800/60' : ''}`}>
+    <div className={`rounded-md px-1 py-1 ${zoneTampon ? 'bg-orange-100 dark:bg-orange-950/40' : ''}`}>
       <div className="flex items-center justify-between px-0.5 mb-1">
-        <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{label}</span>
+        <span
+          className={`text-[9px] font-semibold uppercase tracking-wide ${
+            zoneTampon ? 'text-orange-500 dark:text-orange-400' : 'text-slate-400 dark:text-slate-500'
+          }`}
+        >
+          {label}
+        </span>
         {zoneTampon && (
-          <span className="text-[8px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 rounded px-1 py-0.5">
+          <span className="text-[8px] font-semibold uppercase tracking-wide text-orange-700 dark:text-orange-200 bg-orange-200 dark:bg-orange-900/60 rounded px-1 py-0.5">
             Zone tampon
           </span>
         )}

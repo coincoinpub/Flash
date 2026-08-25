@@ -3,13 +3,11 @@ import type { Statut } from '../types'
 export type StatutCouleur = 'gris' | 'bleu' | 'violet' | 'ambre' | 'vert'
 
 export const STATUT_COULEUR: Record<Statut, StatutCouleur> = {
-  nouveau: 'gris',
   devis_a_faire: 'bleu',
   devis_en_cours: 'bleu',
   pao_a_faire: 'violet',
   pao_en_cours: 'violet',
   a_imprimer: 'ambre',
-  pret: 'vert',
   a_facturer: 'bleu',
   livre: 'vert',
   archive: 'gris',
@@ -59,6 +57,8 @@ export const COULEUR_CLASSES: Record<
 export interface ColonneGroupe {
   statut: Statut
   label: string
+  /** Rendu compact (cartes réduites) — utilisé pour l'archive. */
+  compact?: boolean
 }
 
 export interface ColonneConfig {
@@ -69,7 +69,6 @@ export interface ColonneConfig {
 }
 
 export const COLONNES: ColonneConfig[] = [
-  { key: 'nouveau', titre: 'Nouveau', couleur: 'gris', groupes: [{ statut: 'nouveau', label: 'Nouveau' }] },
   {
     key: 'devis',
     titre: 'Devis',
@@ -89,16 +88,17 @@ export const COLONNES: ColonneConfig[] = [
     ],
   },
   { key: 'a_imprimer', titre: 'À imprimer', couleur: 'ambre', groupes: [{ statut: 'a_imprimer', label: 'À imprimer' }] },
-  { key: 'pret', titre: 'Prêt', couleur: 'vert', groupes: [{ statut: 'pret', label: 'Prêt' }] },
   { key: 'a_facturer', titre: 'À facturer', couleur: 'bleu', groupes: [{ statut: 'a_facturer', label: 'À facturer' }] },
-  { key: 'livre', titre: 'Livré', couleur: 'vert', groupes: [{ statut: 'livre', label: 'Livré' }] },
 ]
 
-// Colonne à part, non incluse dans la grille responsive : accessible uniquement en faisant défiler
-// le Kanban vers la droite, pour ne pas encombrer la vue principale avec les dossiers archivés.
-export const COLONNE_ARCHIVE: ColonneConfig = {
-  key: 'archive',
-  titre: 'Archive',
-  couleur: 'gris',
-  groupes: [{ statut: 'archive', label: 'Archive' }],
+// Livré et Archive empilés dans une seule colonne, tout à droite : un seul défilement vertical
+// pour descendre de l'un à l'autre. L'archive est rendue en compact pour rester discrète.
+export const COLONNE_LIVRE_ARCHIVE: ColonneConfig = {
+  key: 'livre_archive',
+  titre: 'Livré / Archive',
+  couleur: 'vert',
+  groupes: [
+    { statut: 'livre', label: 'Livré' },
+    { statut: 'archive', label: 'Archive', compact: true },
+  ],
 }

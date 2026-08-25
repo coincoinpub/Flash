@@ -12,7 +12,6 @@ interface Props {
   onDragEnd: () => void
   onDropAt: (statut: Statut, index: number) => void
   onCardClick: (dossier: Dossier) => void
-  onCreateDossier?: () => void
   displayMode: boolean
 }
 
@@ -51,7 +50,6 @@ export function KanbanColumn({
   onDragEnd,
   onDropAt,
   onCardClick,
-  onCreateDossier,
   displayMode,
 }: Props) {
   const [overGap, setOverGap] = useState<GapCible | null>(null)
@@ -65,15 +63,6 @@ export function KanbanColumn({
         <span className="text-xs font-normal bg-white/60 dark:bg-black/20 rounded-full px-2 py-0.5 shrink-0">{total}</span>
       </div>
       <div className="flex-1 overflow-y-auto px-2 pt-2 pb-3">
-        {onCreateDossier && (
-          <button
-            type="button"
-            onClick={onCreateDossier}
-            className="w-full flex items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 text-sm font-medium py-2 mb-2 transition"
-          >
-            <span className="text-base leading-none">+</span> Nouveau
-          </button>
-        )}
         {config.groupes.map((groupe) => {
           const items = dossiersParStatut[groupe.statut] ?? []
           return (
@@ -119,6 +108,7 @@ export function KanbanColumn({
                       onDragEnd={onDragEnd}
                       dragging={draggedId === items[i].id}
                       displayMode={displayMode}
+                      compact={groupe.compact}
                     />
                   )}
                 </Fragment>
