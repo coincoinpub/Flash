@@ -11,7 +11,7 @@ import { Avatar } from './components/Avatar'
 import type { Dossier } from './types'
 
 function App() {
-  const { dossiers, updateDossier, reorderDossier, addDossier, clearMembreReferences } = useDossiers()
+  const { dossiers, updateDossier, reorderDossier, addDossier, removeDossier, clearMembreReferences } = useDossiers()
   const { membres, updateMembre, addMembre, removeMembre } = useMembres()
   const { theme, toggleTheme } = useTheme()
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -38,6 +38,16 @@ function App() {
     const nouveau = construireNouveauDossier(dossiers)
     addDossier(nouveau)
     setSelectedId(nouveau.id)
+  }
+
+  const handleArchiveDossier = () => {
+    if (selectedId) reorderDossier(selectedId, 'archive', Number.MAX_SAFE_INTEGER)
+    setSelectedId(null)
+  }
+
+  const handleDeleteDossier = () => {
+    if (selectedId) removeDossier(selectedId)
+    setSelectedId(null)
   }
 
   const handleRemoveMembre = (id: string) => {
@@ -136,6 +146,8 @@ function App() {
           membres={membres}
           onClose={() => setSelectedId(null)}
           onUpdate={(patch) => updateDossier(selectedDossier.id, patch)}
+          onArchive={handleArchiveDossier}
+          onDelete={handleDeleteDossier}
         />
       )}
 

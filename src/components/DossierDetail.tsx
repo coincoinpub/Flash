@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { Dossier, Membre, Statut } from '../types'
+import { useEffect, useState } from 'react'
+import { format } from 'date-fns'
+import type { Dossier, Membre, Moment, Statut } from '../types'
 import { STATUT_LABEL, STATUTS } from '../types'
 import { COULEUR_CLASSES, STATUT_COULEUR } from '../lib/statutConfig'
-import { construireEvenements, EVENEMENT_STYLE, libelleEvenement, patchInfoEvenement, placeholderInfo } from '../lib/planning'
+import { EVENEMENT_STYLE, placeholderInfo } from '../lib/planning'
+import type { EvenementType } from '../lib/planning'
 import { Avatar } from './Avatar'
 import { EditableLine } from './EditableLine'
 
@@ -11,6 +13,8 @@ interface Props {
   membres: Membre[]
   onClose: () => void
   onUpdate: (patch: Partial<Dossier>) => void
+  onArchive: () => void
+  onDelete: () => void
 }
 
 function AssignSelect({
@@ -50,7 +54,57 @@ function AssignSelect({
   )
 }
 
-export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
+function DateMomentInfo({
+  type,
+  date,
+  moment,
+  info,
+  onDate,
+  onMoment,
+  onInfo,
+}: {
+  type: EvenementType
+  date: string
+  moment: Moment
+  info?: string
+  onDate: (date: string) => void
+  onMoment: (moment: Moment) => void
+  onInfo?: (info: string) => void
+}) {
+  return (
+    <div className="ml-5 mt-1.5 space-y-1.5">
+      <div className="flex gap-2">
+        <input
+          type="date"
+          className="flex-1 border border-slate-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
+          value={date}
+          onChange={(e) => onDate(e.target.value)}
+        />
+        <select
+          className="border border-slate-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
+          value={moment}
+          onChange={(e) => onMoment(e.target.value as Moment)}
+        >
+          <option value="matin">Matin</option>
+          <option value="apres_midi">Après-midi</option>
+        </select>
+      </div>
+      {onInfo && (
+        <EditableLine
+          value={info ?? ''}
+          placeholder={placeholderInfo(type)}
+          onSave={onInfo}
+          alwaysVisiblePencil
+          textClassName="text-sm text-slate-700 dark:text-slate-300"
+          inputClassName="w-full text-sm border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
+          pencilClassName="text-slate-400 dark:text-slate-500"
+        />
+      )}
+    </div>
+  )
+}
+
+export function DossierDetail({ dossier, membres, onClose, onUpdate, onArchive, onDelete }: Props) {
   const [commentaire, setCommentaire] = useState(dossier.commentaire)
   const [rdvActif, setRdvActif] = useState(!!dossier.rdv)
   const [rdvDate, setRdvDate] = useState(dossier.rdv?.date ?? '')
@@ -82,19 +136,78 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
   }
 
   const couleur = COULEUR_CLASSES[STATUT_COULEUR[dossier.statut]]
-  // Évènements planning de ce dossier (hors Job et RDV, déjà éditables plus haut dans la fiche).
-  const evenementsPlanning = useMemo(
-    () => construireEvenements([dossier]).filter((ev) => ev.type !== 'impression' && ev.type !== 'rdv'),
-    [dossier],
-  )
+  const aujourdhui = format(new Date(), 'yyyy-MM-dd')
+
+  const lignesEvenements = [
+    {
+      type: 'impression' as const,
+      date: dossier.dateImpression,
+      moment: dossier.dateImpressionMoment,
+      onToggle: (actif: boolean) => onUpdate({ dateImpression: actif ? aujourdhui : null }),
+      onDate: (date: string) => onUpdate({ dateImpression: date }),
+      onMoment: (dateImpressionMoment: Moment) => onUpdate({ dateImpressionMoment }),
+    },
+    {
+      type: 'pose_ext' as const,
+      date: dossier.poseExt,
+      moment: dossier.poseExtMoment,
+      info: dossier.poseExtInfo,
+      onToggle: (actif: boolean) => onUpdate({ poseExt: actif ? aujourdhui : null }),
+      onDate: (date: string) => onUpdate({ poseExt: date }),
+      onMoment: (poseExtMoment: Moment) => onUpdate({ poseExtMoment }),
+      onInfo: (poseExtInfo: string) => onUpdate({ poseExtInfo }),
+    },
+    {
+      type: 'pose_int' as const,
+      date: dossier.poseInt,
+      moment: dossier.poseIntMoment,
+      info: dossier.poseIntInfo,
+      onToggle: (actif: boolean) => onUpdate({ poseInt: actif ? aujourdhui : null }),
+      onDate: (date: string) => onUpdate({ poseInt: date }),
+      onMoment: (poseIntMoment: Moment) => onUpdate({ poseIntMoment }),
+      onInfo: (poseIntInfo: string) => onUpdate({ poseIntInfo }),
+    },
+    {
+      type: 'livraison' as const,
+      date: dossier.dateLivraison,
+      moment: dossier.dateLivraisonMoment,
+      info: dossier.livraisonInfo,
+      onToggle: (actif: boolean) => onUpdate({ dateLivraison: actif ? aujourdhui : null }),
+      onDate: (date: string) => onUpdate({ dateLivraison: date }),
+      onMoment: (dateLivraisonMoment: Moment) => onUpdate({ dateLivraisonMoment }),
+      onInfo: (livraisonInfo: string) => onUpdate({ livraisonInfo }),
+    },
+    {
+      type: 'deadline' as const,
+      date: dossier.deadline,
+      moment: dossier.deadlineMoment,
+      info: dossier.deadlineInfo,
+      onToggle: (actif: boolean) => onUpdate({ deadline: actif ? aujourdhui : null }),
+      onDate: (date: string) => onUpdate({ deadline: date }),
+      onMoment: (deadlineMoment: Moment) => onUpdate({ deadlineMoment }),
+      onInfo: (deadlineInfo: string) => onUpdate({ deadlineInfo }),
+    },
+  ]
+
+  const handleDelete = () => {
+    if (window.confirm(`Supprimer définitivement le dossier ${dossier.client} ?`)) onDelete()
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-900/40 dark:bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col animate-[slidein_0.15s_ease-out]">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+      <div className="relative w-full max-w-lg max-h-[90vh] bg-white dark:bg-slate-900 rounded-xl shadow-2xl flex flex-col animate-[popin_0.15s_ease-out]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
           <div className="min-w-0">
-            <div className="font-mono text-sm text-slate-500 dark:text-slate-400">{dossier.reference}</div>
+            <EditableLine
+              value={dossier.reference}
+              onSave={(reference) => onUpdate({ reference })}
+              placeholder="DE0000"
+              alwaysVisiblePencil
+              textClassName="font-mono text-sm text-slate-500 dark:text-slate-400"
+              inputClassName="font-mono text-sm border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
+              pencilClassName="text-slate-400 dark:text-slate-500"
+            />
             <EditableLine
               value={dossier.client}
               onSave={(client) => onUpdate({ client })}
@@ -107,7 +220,7 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-full w-8 h-8 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded-full w-8 h-8 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
             aria-label="Fermer"
           >
             ✕
@@ -127,17 +240,6 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">N° devis</div>
-              <EditableLine
-                value={dossier.reference}
-                onSave={(reference) => onUpdate({ reference })}
-                alwaysVisiblePencil
-                textClassName="font-mono mt-0.5 dark:text-slate-200"
-                inputClassName="w-full font-mono text-sm border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
-                pencilClassName="text-slate-400 dark:text-slate-500"
-              />
-            </div>
             <div>
               <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">N° client</div>
               <EditableLine
@@ -198,9 +300,13 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
               value={dossier.atelierId}
               onChange={(id) => onUpdate({ atelierId: id })}
             />
+          </div>
+
+          <div className="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Planification</div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide flex items-center gap-2">
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={rdvActif}
@@ -209,10 +315,11 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
                     applyRdv(e.target.checked, rdvDate, rdvHeure, rdvLieu)
                   }}
                 />
-                Rendez-vous
+                <span className={`w-2 h-2 rounded-sm ${EVENEMENT_STYLE.rdv.bg}`} />
+                {EVENEMENT_STYLE.rdv.label}
               </label>
               {rdvActif && (
-                <div className="space-y-1.5 mt-1.5">
+                <div className="ml-5 space-y-1.5 mt-1.5">
                   <div className="flex gap-2">
                     <input
                       type="date"
@@ -246,33 +353,28 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
                 </div>
               )}
             </div>
-          </div>
 
-          {evenementsPlanning.length > 0 && (
-            <div className="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
-              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Planning</div>
-              {evenementsPlanning.map((ev) => {
-                const style = EVENEMENT_STYLE[ev.type]
-                return (
-                  <div key={ev.id}>
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      <span className={`w-2 h-2 rounded-sm ${style.bg}`} />
-                      {libelleEvenement(ev)}
-                    </div>
-                    <EditableLine
-                      value={ev.info}
-                      placeholder={placeholderInfo(ev.type)}
-                      onSave={(valeur) => onUpdate(patchInfoEvenement(ev, valeur))}
-                      alwaysVisiblePencil
-                      textClassName="text-sm text-slate-700 dark:text-slate-300"
-                      inputClassName="w-full text-sm border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
-                      pencilClassName="text-slate-400 dark:text-slate-500"
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          )}
+            {lignesEvenements.map((ligne) => (
+              <div key={ligne.type}>
+                <label className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                  <input type="checkbox" checked={!!ligne.date} onChange={(e) => ligne.onToggle(e.target.checked)} />
+                  <span className={`w-2 h-2 rounded-sm ${EVENEMENT_STYLE[ligne.type].bg}`} />
+                  {EVENEMENT_STYLE[ligne.type].label}
+                </label>
+                {ligne.date && (
+                  <DateMomentInfo
+                    type={ligne.type}
+                    date={ligne.date}
+                    moment={ligne.moment}
+                    info={'info' in ligne ? ligne.info : undefined}
+                    onDate={ligne.onDate}
+                    onMoment={ligne.onMoment}
+                    onInfo={'onInfo' in ligne ? ligne.onInfo : undefined}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
 
           <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
             <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Commentaire</label>
@@ -283,6 +385,23 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
               onChange={(e) => setCommentaire(e.target.value)}
             />
           </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-2 px-5 py-3 border-t border-slate-200 dark:border-slate-700 shrink-0">
+          <button
+            type="button"
+            onClick={onArchive}
+            className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md px-3 py-1.5 flex items-center gap-1.5"
+          >
+            🗄 Archiver
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-md px-3 py-1.5 flex items-center gap-1.5"
+          >
+            🗑 Supprimer
+          </button>
         </div>
       </div>
     </div>

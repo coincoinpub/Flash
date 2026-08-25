@@ -12,6 +12,7 @@ export const STATUT_COULEUR: Record<Statut, StatutCouleur> = {
   pret: 'vert',
   a_facturer: 'bleu',
   livre: 'vert',
+  archive: 'gris',
 }
 
 export const COULEUR_CLASSES: Record<
@@ -92,3 +93,12 @@ export const COLONNES: ColonneConfig[] = [
   { key: 'a_facturer', titre: 'À facturer', couleur: 'bleu', groupes: [{ statut: 'a_facturer', label: 'À facturer' }] },
   { key: 'livre', titre: 'Livré', couleur: 'vert', groupes: [{ statut: 'livre', label: 'Livré' }] },
 ]
+
+// Colonne à part, non incluse dans la grille responsive : accessible uniquement en faisant défiler
+// le Kanban vers la droite, pour ne pas encombrer la vue principale avec les dossiers archivés.
+export const COLONNE_ARCHIVE: ColonneConfig = {
+  key: 'archive',
+  titre: 'Archive',
+  couleur: 'gris',
+  groupes: [{ statut: 'archive', label: 'Archive' }],
+}

@@ -8,6 +8,7 @@ export type Statut =
   | 'pret'
   | 'a_facturer'
   | 'livre'
+  | 'archive'
 
 export const STATUTS: Statut[] = [
   'nouveau',
@@ -19,6 +20,7 @@ export const STATUTS: Statut[] = [
   'pret',
   'a_facturer',
   'livre',
+  'archive',
 ]
 
 export const STATUT_LABEL: Record<Statut, string> = {
@@ -31,6 +33,7 @@ export const STATUT_LABEL: Record<Statut, string> = {
   pret: 'Prêt',
   a_facturer: 'À facturer',
   livre: 'Livré',
+  archive: 'Archivé',
 }
 
 export type Pole = 'impression' | 'signaletique'

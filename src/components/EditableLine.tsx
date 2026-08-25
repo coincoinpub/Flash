@@ -83,7 +83,15 @@ export function EditableLine({
 
   return (
     <span className="group/line flex items-center gap-1 min-w-0">
-      <span className={`${textClassName} ${value ? '' : 'italic opacity-60'} truncate min-w-0`}>
+      <span
+        role="button"
+        tabIndex={0}
+        onClick={startEdit}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') startEdit(e)
+        }}
+        className={`${textClassName} ${value ? '' : 'italic opacity-60'} truncate min-w-0 cursor-text rounded hover:bg-black/5 dark:hover:bg-white/10 -mx-1 px-1`}
+      >
         {value || placeholder}
       </span>
       <button

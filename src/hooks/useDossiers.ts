@@ -51,6 +51,10 @@ export function useDossiers() {
     setDossiers((prev) => [dossier, ...prev])
   }, [])
 
+  const removeDossier = useCallback((id: string) => {
+    setDossiers((prev) => prev.filter((d) => d.id !== id))
+  }, [])
+
   // Retire toute référence à un membre supprimé (assignations) sans toucher au reste du dossier.
   const clearMembreReferences = useCallback((membreId: string) => {
     setDossiers((prev) =>
@@ -68,5 +72,5 @@ export function useDossiers() {
     setDossiers(DOSSIERS)
   }, [])
 
-  return { dossiers, updateDossier, reorderDossier, addDossier, clearMembreReferences, resetDemo }
+  return { dossiers, updateDossier, reorderDossier, addDossier, removeDossier, clearMembreReferences, resetDemo }
 }
