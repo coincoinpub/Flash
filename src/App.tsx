@@ -1,21 +1,25 @@
 import { useMemo, useState } from 'react'
-import { MEMBRES } from './data/mockData'
 import { useDossiers } from './hooks/useDossiers'
+import { useMembres } from './hooks/useMembres'
 import { useTheme } from './hooks/useTheme'
+import { construireNouveauDossier } from './lib/creerDossier'
 import { KanbanBoard } from './components/KanbanBoard'
 import { Planning } from './components/Planning'
 import { DossierDetail } from './components/DossierDetail'
+import { TeamPanel } from './components/TeamPanel'
 import { Avatar } from './components/Avatar'
 import type { Dossier } from './types'
 
 function App() {
-  const { dossiers, updateDossier, moveDossier } = useDossiers()
+  const { dossiers, updateDossier, reorderDossier, addDossier, clearMembreReferences } = useDossiers()
+  const { membres, updateMembre, addMembre, removeMembre } = useMembres()
   const { theme, toggleTheme } = useTheme()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [filtreMembreId, setFiltreMembreId] = useState<string>('')
   const [displayMode, setDisplayMode] = useState(false)
+  const [equipeOuverte, setEquipeOuverte] = useState(false)
 
-  const membresParId = useMemo(() => Object.fromEntries(MEMBRES.map((m) => [m.id, m])), [])
+  const membresParId = useMemo(() => Object.fromEntries(membres.map((m) => [m.id, m])), [membres])
 
   const dossiersFiltres = useMemo(() => {
     if (!filtreMembreId) return dossiers
@@ -29,6 +33,18 @@ function App() {
   }, [dossiers, filtreMembreId])
 
   const selectedDossier: Dossier | null = selectedId ? (dossiers.find((d) => d.id === selectedId) ?? null) : null
+
+  const handleCreateDossier = () => {
+    const nouveau = construireNouveauDossier(dossiers)
+    addDossier(nouveau)
+    setSelectedId(nouveau.id)
+  }
+
+  const handleRemoveMembre = (id: string) => {
+    removeMembre(id)
+    clearMembreReferences(id)
+    if (filtreMembreId === id) setFiltreMembreId('')
+  }
 
   return (
     <div className={`min-h-screen flex flex-col ${displayMode ? 'p-6' : 'p-4 md:p-6'}`}>
@@ -50,14 +66,14 @@ function App() {
               onChange={(e) => setFiltreMembreId(e.target.value)}
             >
               <option value="">Toute l'équipe</option>
-              {MEMBRES.map((m) => (
+              {membres.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.nom}
                 </option>
               ))}
             </select>
-            <div className="flex items-center -space-x-1.5 mr-1">
-              {MEMBRES.map((m) => (
+            <div className="flex items-center -space-x-1.5">
+              {membres.map((m) => (
                 <button
                   key={m.id}
                   type="button"
@@ -70,6 +86,15 @@ function App() {
                 </button>
               ))}
             </div>
+            <button
+              type="button"
+              onClick={() => setEquipeOuverte(true)}
+              className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded p-1"
+              aria-label="Gérer l'équipe"
+              title="Gérer l'équipe"
+            >
+              ✏️
+            </button>
           </div>
         )}
 
@@ -96,8 +121,9 @@ function App() {
         <KanbanBoard
           dossiers={dossiersFiltres}
           membresParId={membresParId}
-          onMove={moveDossier}
+          onReorder={reorderDossier}
           onCardClick={(d) => setSelectedId(d.id)}
+          onCreateDossier={handleCreateDossier}
           displayMode={displayMode}
         />
 
@@ -107,9 +133,19 @@ function App() {
       {selectedDossier && (
         <DossierDetail
           dossier={selectedDossier}
-          membres={MEMBRES}
+          membres={membres}
           onClose={() => setSelectedId(null)}
           onUpdate={(patch) => updateDossier(selectedDossier.id, patch)}
+        />
+      )}
+
+      {equipeOuverte && (
+        <TeamPanel
+          membres={membres}
+          onClose={() => setEquipeOuverte(false)}
+          onUpdate={updateMembre}
+          onAdd={addMembre}
+          onRemove={handleRemoveMembre}
         />
       )}
     </div>

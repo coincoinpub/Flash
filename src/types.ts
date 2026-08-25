@@ -61,6 +61,7 @@ export interface Dossier {
   client: string
   job: string
   statut: Statut
+  ordre: number // position manuelle dans sa colonne/groupe de statut
   date: string // yyyy-MM-dd — date de création / dossier
   commercialId: string | null
   paoId: string | null

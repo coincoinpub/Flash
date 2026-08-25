@@ -6,12 +6,13 @@ import { KanbanColumn } from './KanbanColumn'
 interface Props {
   dossiers: Dossier[]
   membresParId: Record<string, Membre>
-  onMove: (id: string, statut: Statut) => void
+  onReorder: (id: string, statut: Statut, index: number) => void
   onCardClick: (dossier: Dossier) => void
+  onCreateDossier: () => void
   displayMode: boolean
 }
 
-export function KanbanBoard({ dossiers, membresParId, onMove, onCardClick, displayMode }: Props) {
+export function KanbanBoard({ dossiers, membresParId, onReorder, onCardClick, onCreateDossier, displayMode }: Props) {
   const [draggedId, setDraggedId] = useState<string | null>(null)
 
   const dossiersParStatut = useMemo(() => {
@@ -22,11 +23,17 @@ export function KanbanBoard({ dossiers, membresParId, onMove, onCardClick, displ
     for (const d of dossiers) {
       map[d.statut]?.push(d)
     }
+    for (const statut of Object.keys(map) as Statut[]) {
+      map[statut].sort((a, b) => a.ordre - b.ordre)
+    }
     return map
   }, [dossiers])
 
   return (
-    <div className="flex gap-3 overflow-x-auto pb-2" style={{ minHeight: displayMode ? '70vh' : '520px' }}>
+    <div
+      className="grid gap-2 overflow-x-auto pb-1"
+      style={{ gridTemplateColumns: `repeat(${COLONNES.length}, minmax(150px, 1fr))`, minHeight: displayMode ? '70vh' : '520px' }}
+    >
       {COLONNES.map((config) => (
         <KanbanColumn
           key={config.key}
@@ -36,11 +43,12 @@ export function KanbanBoard({ dossiers, membresParId, onMove, onCardClick, displ
           draggedId={draggedId}
           onDragStart={setDraggedId}
           onDragEnd={() => setDraggedId(null)}
-          onDrop={(statut) => {
-            if (draggedId) onMove(draggedId, statut)
+          onDropAt={(statut, index) => {
+            if (draggedId) onReorder(draggedId, statut, index)
             setDraggedId(null)
           }}
           onCardClick={onCardClick}
+          onCreateDossier={config.key === 'nouveau' ? onCreateDossier : undefined}
           displayMode={displayMode}
         />
       ))}

@@ -129,15 +129,35 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">N° devis</div>
-              <div className="font-mono mt-0.5 dark:text-slate-200">{dossier.reference}</div>
+              <EditableLine
+                value={dossier.reference}
+                onSave={(reference) => onUpdate({ reference })}
+                alwaysVisiblePencil
+                textClassName="font-mono mt-0.5 dark:text-slate-200"
+                inputClassName="w-full font-mono text-sm border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
+                pencilClassName="text-slate-400 dark:text-slate-500"
+              />
             </div>
             <div>
               <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">N° client</div>
-              <div className="font-mono mt-0.5 dark:text-slate-200">{dossier.numeroClient}</div>
+              <EditableLine
+                value={dossier.numeroClient}
+                onSave={(numeroClient) => onUpdate({ numeroClient })}
+                placeholder="Ajouter…"
+                alwaysVisiblePencil
+                textClassName="font-mono mt-0.5 dark:text-slate-200"
+                inputClassName="w-full font-mono text-sm border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"
+                pencilClassName="text-slate-400 dark:text-slate-500"
+              />
             </div>
             <div>
               <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Date</div>
-              <div className="mt-0.5 dark:text-slate-200">{dossier.date}</div>
+              <input
+                type="date"
+                className="mt-0.5 border border-slate-300 dark:border-slate-600 rounded-md px-1.5 py-0.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
+                value={dossier.date}
+                onChange={(e) => onUpdate({ date: e.target.value })}
+              />
             </div>
             <div>
               <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Statut</div>

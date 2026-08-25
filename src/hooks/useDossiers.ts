@@ -29,13 +29,44 @@ export function useDossiers() {
     setDossiers((prev) => prev.map((d) => (d.id === id ? { ...d, ...patch } : d)))
   }, [])
 
-  const moveDossier = useCallback((id: string, statut: Statut) => {
-    setDossiers((prev) => prev.map((d) => (d.id === id ? { ...d, statut } : d)))
+  // Déplace/réordonne un dossier : le place à `index` parmi les dossiers du statut cible,
+  // puis renumérote tout le groupe pour garder un ordre dense et cohérent.
+  const reorderDossier = useCallback((id: string, statut: Statut, index: number) => {
+    setDossiers((prev) => {
+      const dragged = prev.find((d) => d.id === id)
+      if (!dragged) return prev
+      const groupe = prev.filter((d) => d.statut === statut && d.id !== id).sort((a, b) => a.ordre - b.ordre)
+      const indexBorne = Math.max(0, Math.min(index, groupe.length))
+      groupe.splice(indexBorne, 0, dragged)
+      const ordreParId = new Map(groupe.map((d, i) => [d.id, i]))
+      return prev.map((d) => {
+        if (d.id === id) return { ...d, statut, ordre: ordreParId.get(id) ?? 0 }
+        if (d.statut === statut && ordreParId.has(d.id)) return { ...d, ordre: ordreParId.get(d.id)! }
+        return d
+      })
+    })
+  }, [])
+
+  const addDossier = useCallback((dossier: Dossier) => {
+    setDossiers((prev) => [dossier, ...prev])
+  }, [])
+
+  // Retire toute référence à un membre supprimé (assignations) sans toucher au reste du dossier.
+  const clearMembreReferences = useCallback((membreId: string) => {
+    setDossiers((prev) =>
+      prev.map((d) => ({
+        ...d,
+        commercialId: d.commercialId === membreId ? null : d.commercialId,
+        paoId: d.paoId === membreId ? null : d.paoId,
+        atelierId: d.atelierId === membreId ? null : d.atelierId,
+        enChargeId: d.enChargeId === membreId ? null : d.enChargeId,
+      })),
+    )
   }, [])
 
   const resetDemo = useCallback(() => {
     setDossiers(DOSSIERS)
   }, [])
 
-  return { dossiers, updateDossier, moveDossier, resetDemo }
+  return { dossiers, updateDossier, reorderDossier, addDossier, clearMembreReferences, resetDemo }
 }

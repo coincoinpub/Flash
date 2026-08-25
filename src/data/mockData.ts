@@ -19,6 +19,7 @@ export const MEMBRES: Membre[] = [
 
 // Valeurs par défaut des champs planning ajoutés — écrasées au cas par cas ci-dessous.
 const DEFAUTS = {
+  ordre: 0,
   dateImpressionMoment: 'matin' as const,
   dateLivraisonMoment: 'matin' as const,
   livraisonInfo: '',
@@ -426,3 +427,11 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'fred',
   },
 ]
+
+// Attribue un ordre séquentiel par statut, dans l'ordre de la liste ci-dessus.
+const compteurParStatut: Partial<Record<Dossier['statut'], number>> = {}
+for (const d of DOSSIERS) {
+  const n = compteurParStatut[d.statut] ?? 0
+  d.ordre = n
+  compteurParStatut[d.statut] = n + 1
+}

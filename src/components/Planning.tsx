@@ -19,11 +19,11 @@ function EvenementChip({ ev, onSelectDossier }: { ev: Evenement; onSelectDossier
     <button
       type="button"
       onClick={() => onSelectDossier(ev.dossier)}
-      className={`w-full text-left rounded px-1.5 py-1 mb-1 cursor-pointer ${style.bg} ${style.text}`}
+      className={`w-full text-left rounded px-1.5 py-1.5 mb-1 cursor-pointer ${style.bg} ${style.text}`}
     >
-      <div className="text-[9px] font-semibold uppercase tracking-wide opacity-90 truncate">{libelleEvenement(ev)}</div>
-      <div className="text-[11px] font-bold leading-tight truncate">{ev.client}</div>
-      {ev.info && <div className="text-[10px] leading-tight opacity-90 truncate">{ev.info}</div>}
+      <div className="text-[10px] font-semibold uppercase tracking-wide opacity-90 truncate">{libelleEvenement(ev)}</div>
+      <div className="text-[13px] font-bold leading-tight truncate">{ev.client}</div>
+      {ev.info && <div className="text-[11px] leading-tight opacity-90 truncate">{ev.info}</div>}
     </button>
   )
 }
