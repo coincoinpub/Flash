@@ -8,10 +8,11 @@ interface Props {
   membresParId: Record<string, Membre>
   onMove: (id: string, statut: Statut) => void
   onCardClick: (dossier: Dossier) => void
+  onUpdateDossier: (id: string, patch: Partial<Dossier>) => void
   displayMode: boolean
 }
 
-export function KanbanBoard({ dossiers, membresParId, onMove, onCardClick, displayMode }: Props) {
+export function KanbanBoard({ dossiers, membresParId, onMove, onCardClick, onUpdateDossier, displayMode }: Props) {
   const [draggedId, setDraggedId] = useState<string | null>(null)
 
   const dossiersParStatut = useMemo(() => {
@@ -41,6 +42,7 @@ export function KanbanBoard({ dossiers, membresParId, onMove, onCardClick, displ
             setDraggedId(null)
           }}
           onCardClick={onCardClick}
+          onUpdateDossier={onUpdateDossier}
           displayMode={displayMode}
         />
       ))}

@@ -12,6 +12,7 @@ interface Props {
   onDragEnd: () => void
   onDrop: (statut: Statut) => void
   onCardClick: (dossier: Dossier) => void
+  onUpdateDossier: (id: string, patch: Partial<Dossier>) => void
   displayMode: boolean
 }
 
@@ -24,6 +25,7 @@ export function KanbanColumn({
   onDragEnd,
   onDrop,
   onCardClick,
+  onUpdateDossier,
   displayMode,
 }: Props) {
   const [overStatut, setOverStatut] = useState<Statut | null>(null)
@@ -75,6 +77,7 @@ export function KanbanColumn({
                   dossier={dossier}
                   enCharge={dossier.enChargeId ? (membresParId[dossier.enChargeId] ?? null) : null}
                   onClick={() => onCardClick(dossier)}
+                  onUpdate={(patch) => onUpdateDossier(dossier.id, patch)}
                   onDragStart={(e) => {
                     onDragStart(dossier.id)
                     e.dataTransfer.effectAllowed = 'move'

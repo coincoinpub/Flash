@@ -48,7 +48,11 @@ export interface Membre {
 export interface Rdv {
   date: string // yyyy-MM-dd
   heure: string // HH:mm
+  lieu: string // lieu du rendez-vous
 }
+
+// Demi-journée d'un évènement du planning
+export type Moment = 'matin' | 'apres_midi'
 
 export interface Dossier {
   id: string
@@ -63,10 +67,19 @@ export interface Dossier {
   atelierId: string | null
   rdv: Rdv | null
   dateImpression: string | null
+  dateImpressionMoment: Moment
   dateLivraison: string | null
+  dateLivraisonMoment: Moment
+  livraisonInfo: string
   deadline: string | null
+  deadlineMoment: Moment
+  deadlineInfo: string
   poseExt: string | null
+  poseExtMoment: Moment
+  poseExtInfo: string
   poseInt: string | null
+  poseIntMoment: Moment
+  poseIntInfo: string
   commentaire: string
   enChargeId: string | null
 }

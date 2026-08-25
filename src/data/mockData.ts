@@ -1,19 +1,38 @@
-import { addDays, format } from 'date-fns'
+import { addDays, differenceInCalendarDays, format, nextFriday } from 'date-fns'
 import type { Dossier, Membre } from '../types'
 
 const iso = (offset: number) => format(addDays(new Date(), offset), 'yyyy-MM-dd')
 
+// Un vendredi (à venir) garanti dans les 3 semaines affichées, pour illustrer la zone tampon.
+const prochainVendredi = nextFriday(new Date())
+const offsetVendredi = differenceInCalendarDays(prochainVendredi, new Date())
+const isoVendredi = (semainesPlus = 0) => iso(offsetVendredi + semainesPlus * 7)
+
 export const MEMBRES: Membre[] = [
-  { id: 'stephane', nom: 'Stéphane', initiales: 'ST', role: 'commercial', pole: 'impression', couleur: '#2563eb' },
-  { id: 'fred', nom: 'Fred', initiales: 'FR', role: 'commercial', pole: 'signaletique', couleur: '#0891b2' },
-  { id: 'david', nom: 'David', initiales: 'DA', role: 'pao', pole: 'impression', couleur: '#ea580c' },
-  { id: 'emilien', nom: 'Emilien', initiales: 'EM', role: 'pao', pole: 'signaletique', couleur: '#d97706' },
-  { id: 'brian', nom: 'Brian', initiales: 'BR', role: 'atelier', pole: 'atelier', couleur: '#16a34a' },
-  { id: 'laurent', nom: 'Laurent', initiales: 'LA', role: 'atelier', pole: 'atelier', couleur: '#65a30d' },
+  { id: 'stephane', nom: 'Stéphane', initiales: 'S', role: 'commercial', pole: 'impression', couleur: '#2563eb' },
+  { id: 'fred', nom: 'Fred', initiales: 'F', role: 'commercial', pole: 'signaletique', couleur: '#0891b2' },
+  { id: 'david', nom: 'David', initiales: 'D', role: 'pao', pole: 'impression', couleur: '#ea580c' },
+  { id: 'emilien', nom: 'Emilien', initiales: 'E', role: 'pao', pole: 'signaletique', couleur: '#d97706' },
+  { id: 'brian', nom: 'Brian', initiales: 'B', role: 'atelier', pole: 'atelier', couleur: '#16a34a' },
+  { id: 'laurent', nom: 'Laurent', initiales: 'L', role: 'atelier', pole: 'atelier', couleur: '#65a30d' },
 ]
+
+// Valeurs par défaut des champs planning ajoutés — écrasées au cas par cas ci-dessous.
+const DEFAUTS = {
+  dateImpressionMoment: 'matin' as const,
+  dateLivraisonMoment: 'matin' as const,
+  livraisonInfo: '',
+  deadlineMoment: 'matin' as const,
+  deadlineInfo: '',
+  poseExtMoment: 'matin' as const,
+  poseExtInfo: '',
+  poseIntMoment: 'apres_midi' as const,
+  poseIntInfo: '',
+}
 
 export const DOSSIERS: Dossier[] = [
   {
+    ...DEFAUTS,
     id: 'd1',
     reference: 'DE0851',
     numeroClient: '112730',
@@ -28,12 +47,14 @@ export const DOSSIERS: Dossier[] = [
     dateImpression: null,
     dateLivraison: null,
     deadline: iso(6),
+    deadlineInfo: 'À livrer avant le lancement de la campagne',
     poseExt: null,
     poseInt: null,
     commentaire: '',
     enChargeId: 'stephane',
   },
   {
+    ...DEFAUTS,
     id: 'd2',
     reference: 'DE0854',
     numeroClient: '112742',
@@ -44,7 +65,7 @@ export const DOSSIERS: Dossier[] = [
     commercialId: null,
     paoId: null,
     atelierId: null,
-    rdv: { date: iso(1), heure: '10:30' },
+    rdv: { date: iso(1), heure: '10:30', lieu: 'Agence Flash Impression' },
     dateImpression: null,
     dateLivraison: null,
     deadline: null,
@@ -54,6 +75,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'fred',
   },
   {
+    ...DEFAUTS,
     id: 'd3',
     reference: 'DE0839',
     numeroClient: '112680',
@@ -74,6 +96,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'stephane',
   },
   {
+    ...DEFAUTS,
     id: 'd4',
     reference: 'DE0844',
     numeroClient: '112701',
@@ -84,7 +107,7 @@ export const DOSSIERS: Dossier[] = [
     commercialId: 'fred',
     paoId: null,
     atelierId: null,
-    rdv: { date: iso(3), heure: '14:00' },
+    rdv: { date: iso(3), heure: '14:00', lieu: 'Chez le client' },
     dateImpression: null,
     dateLivraison: null,
     deadline: null,
@@ -94,6 +117,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'fred',
   },
   {
+    ...DEFAUTS,
     id: 'd5',
     reference: 'DE0821',
     numeroClient: '112602',
@@ -114,6 +138,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'stephane',
   },
   {
+    ...DEFAUTS,
     id: 'd6',
     reference: 'DE0826',
     numeroClient: '112615',
@@ -134,6 +159,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'fred',
   },
   {
+    ...DEFAUTS,
     id: 'd7',
     reference: 'DE0810',
     numeroClient: '112560',
@@ -154,6 +180,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'david',
   },
   {
+    ...DEFAUTS,
     id: 'd8',
     reference: 'DE0815',
     numeroClient: '112578',
@@ -170,10 +197,13 @@ export const DOSSIERS: Dossier[] = [
     deadline: null,
     poseExt: null,
     poseInt: iso(9),
+    poseIntMoment: 'matin',
+    poseIntInfo: 'Salle 2, avant ouverture 9h',
     commentaire: '',
     enChargeId: 'emilien',
   },
   {
+    ...DEFAUTS,
     id: 'd9',
     reference: 'DE0798',
     numeroClient: '112510',
@@ -188,12 +218,15 @@ export const DOSSIERS: Dossier[] = [
     dateImpression: null,
     dateLivraison: null,
     deadline: iso(5),
-    poseExt: iso(11),
+    poseExt: isoVendredi(0),
+    poseExtMoment: 'apres_midi',
+    poseExtInfo: 'Fixation sur mâts existants, prévoir nacelle',
     poseInt: null,
     commentaire: 'Maquette envoyée, en attente de validation client.',
     enChargeId: 'emilien',
   },
   {
+    ...DEFAUTS,
     id: 'd10',
     reference: 'DE0802',
     numeroClient: '112524',
@@ -214,6 +247,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'david',
   },
   {
+    ...DEFAUTS,
     id: 'd11',
     reference: 'DE0780',
     numeroClient: '112455',
@@ -226,7 +260,10 @@ export const DOSSIERS: Dossier[] = [
     atelierId: 'brian',
     rdv: null,
     dateImpression: iso(1),
+    dateImpressionMoment: 'matin',
     dateLivraison: iso(3),
+    dateLivraisonMoment: 'apres_midi',
+    livraisonInfo: 'Dépôt en boutique',
     deadline: null,
     poseExt: null,
     poseInt: null,
@@ -234,6 +271,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'brian',
   },
   {
+    ...DEFAUTS,
     id: 'd12',
     reference: 'DE0771',
     numeroClient: '112402',
@@ -246,6 +284,7 @@ export const DOSSIERS: Dossier[] = [
     atelierId: 'laurent',
     rdv: null,
     dateImpression: iso(2),
+    dateImpressionMoment: 'apres_midi',
     dateLivraison: null,
     deadline: null,
     poseExt: null,
@@ -254,6 +293,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'laurent',
   },
   {
+    ...DEFAUTS,
     id: 'd13',
     reference: 'DE0755',
     numeroClient: '112340',
@@ -267,13 +307,17 @@ export const DOSSIERS: Dossier[] = [
     rdv: null,
     dateImpression: iso(-2),
     dateLivraison: iso(0),
+    livraisonInfo: 'Remise en main propre au gérant',
     deadline: null,
     poseExt: iso(4),
+    poseExtMoment: 'matin',
+    poseExtInfo: 'Sol extérieur terrasse, prévoir séchage 24h',
     poseInt: null,
     commentaire: 'Pose extérieure à confirmer avec le client.',
     enChargeId: 'brian',
   },
   {
+    ...DEFAUTS,
     id: 'd14',
     reference: 'DE0748',
     numeroClient: '112298',
@@ -290,10 +334,13 @@ export const DOSSIERS: Dossier[] = [
     deadline: null,
     poseExt: null,
     poseInt: iso(5),
+    poseIntMoment: 'matin',
+    poseIntInfo: 'Vitrine côté rue, avant ouverture',
     commentaire: '',
     enChargeId: 'laurent',
   },
   {
+    ...DEFAUTS,
     id: 'd15',
     reference: 'DE0712',
     numeroClient: '112180',
@@ -314,6 +361,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'fred',
   },
   {
+    ...DEFAUTS,
     id: 'd16',
     reference: 'DE0699',
     numeroClient: '112120',
@@ -334,6 +382,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'stephane',
   },
   {
+    ...DEFAUTS,
     id: 'd17',
     reference: 'DE0670',
     numeroClient: '112050',
@@ -354,6 +403,7 @@ export const DOSSIERS: Dossier[] = [
     enChargeId: 'stephane',
   },
   {
+    ...DEFAUTS,
     id: 'd18',
     reference: 'DE0862',
     numeroClient: '112785',
@@ -364,11 +414,13 @@ export const DOSSIERS: Dossier[] = [
     commercialId: 'fred',
     paoId: null,
     atelierId: null,
-    rdv: { date: iso(2), heure: '09:00' },
+    rdv: { date: iso(2), heure: '09:00', lieu: 'Chez le client — dépôt route de Bordeaux' },
     dateImpression: null,
     dateLivraison: null,
     deadline: iso(8),
-    poseExt: iso(14),
+    poseExt: isoVendredi(1),
+    poseExtMoment: 'apres_midi',
+    poseExtInfo: 'Prise de mesures avant pose définitive',
     poseInt: null,
     commentaire: 'RDV sur site pour prise de mesures.',
     enChargeId: 'fred',

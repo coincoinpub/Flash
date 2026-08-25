@@ -53,12 +53,14 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
   const [rdvActif, setRdvActif] = useState(!!dossier.rdv)
   const [rdvDate, setRdvDate] = useState(dossier.rdv?.date ?? '')
   const [rdvHeure, setRdvHeure] = useState(dossier.rdv?.heure ?? '')
+  const [rdvLieu, setRdvLieu] = useState(dossier.rdv?.lieu ?? '')
 
   useEffect(() => {
     setCommentaire(dossier.commentaire)
     setRdvActif(!!dossier.rdv)
     setRdvDate(dossier.rdv?.date ?? '')
     setRdvHeure(dossier.rdv?.heure ?? '')
+    setRdvLieu(dossier.rdv?.lieu ?? '')
   }, [dossier.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -69,9 +71,9 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commentaire])
 
-  const applyRdv = (actif: boolean, date: string, heure: string) => {
+  const applyRdv = (actif: boolean, date: string, heure: string, lieu: string) => {
     if (actif && date && heure) {
-      onUpdate({ rdv: { date, heure } })
+      onUpdate({ rdv: { date, heure, lieu } })
     } else if (!actif) {
       onUpdate({ rdv: null })
     }
@@ -163,29 +165,41 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate }: Props) {
                   checked={rdvActif}
                   onChange={(e) => {
                     setRdvActif(e.target.checked)
-                    applyRdv(e.target.checked, rdvDate, rdvHeure)
+                    applyRdv(e.target.checked, rdvDate, rdvHeure, rdvLieu)
                   }}
                 />
                 Rendez-vous
               </label>
               {rdvActif && (
-                <div className="flex gap-2 mt-1.5">
+                <div className="space-y-1.5 mt-1.5">
+                  <div className="flex gap-2">
+                    <input
+                      type="date"
+                      className="flex-1 border border-slate-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
+                      value={rdvDate}
+                      onChange={(e) => {
+                        setRdvDate(e.target.value)
+                        applyRdv(true, e.target.value, rdvHeure, rdvLieu)
+                      }}
+                    />
+                    <input
+                      type="time"
+                      className="w-28 border border-slate-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
+                      value={rdvHeure}
+                      onChange={(e) => {
+                        setRdvHeure(e.target.value)
+                        applyRdv(true, rdvDate, e.target.value, rdvLieu)
+                      }}
+                    />
+                  </div>
                   <input
-                    type="date"
-                    className="flex-1 border border-slate-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
-                    value={rdvDate}
+                    type="text"
+                    placeholder="Lieu du rendez-vous"
+                    className="w-full border border-slate-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
+                    value={rdvLieu}
                     onChange={(e) => {
-                      setRdvDate(e.target.value)
-                      applyRdv(true, e.target.value, rdvHeure)
-                    }}
-                  />
-                  <input
-                    type="time"
-                    className="w-28 border border-slate-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
-                    value={rdvHeure}
-                    onChange={(e) => {
-                      setRdvHeure(e.target.value)
-                      applyRdv(true, rdvDate, e.target.value)
+                      setRdvLieu(e.target.value)
+                      applyRdv(true, rdvDate, rdvHeure, e.target.value)
                     }}
                   />
                 </div>

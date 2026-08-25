@@ -1,13 +1,13 @@
 import type { Statut } from '../types'
 
-export type StatutCouleur = 'gris' | 'bleu' | 'orange' | 'ambre' | 'vert'
+export type StatutCouleur = 'gris' | 'bleu' | 'violet' | 'ambre' | 'vert'
 
 export const STATUT_COULEUR: Record<Statut, StatutCouleur> = {
   nouveau: 'gris',
   devis_a_faire: 'bleu',
   devis_en_cours: 'bleu',
-  pao_a_faire: 'orange',
-  pao_en_cours: 'orange',
+  pao_a_faire: 'violet',
+  pao_en_cours: 'violet',
   a_imprimer: 'ambre',
   pret: 'vert',
   a_facturer: 'bleu',
@@ -32,12 +32,12 @@ export const COULEUR_CLASSES: Record<
     dot: 'bg-blue-500',
     header: 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200',
   },
-  orange: {
-    bg: 'bg-orange-50 dark:bg-orange-950/40',
-    border: 'border-orange-300 dark:border-orange-800',
-    text: 'text-orange-800 dark:text-orange-300',
-    dot: 'bg-orange-500',
-    header: 'bg-orange-100 text-orange-800 dark:bg-orange-900/60 dark:text-orange-200',
+  violet: {
+    bg: 'bg-violet-50 dark:bg-violet-950/40',
+    border: 'border-violet-300 dark:border-violet-800',
+    text: 'text-violet-800 dark:text-violet-300',
+    dot: 'bg-violet-500',
+    header: 'bg-violet-100 text-violet-800 dark:bg-violet-900/60 dark:text-violet-200',
   },
   ambre: {
     bg: 'bg-amber-50 dark:bg-amber-950/40',
@@ -81,7 +81,7 @@ export const COLONNES: ColonneConfig[] = [
   {
     key: 'pao',
     titre: 'PAO',
-    couleur: 'orange',
+    couleur: 'violet',
     groupes: [
       { statut: 'pao_a_faire', label: 'À faire' },
       { statut: 'pao_en_cours', label: 'En cours' },
