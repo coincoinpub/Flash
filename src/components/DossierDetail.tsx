@@ -128,9 +128,12 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate, onArchive, 
   }, [commentaire])
 
   const applyRdv = (actif: boolean, date: string, heure: string, lieu: string) => {
-    if (actif && date && heure) {
-      onUpdate({ rdv: { date, heure, lieu } })
-    } else if (!actif) {
+    if (actif) {
+      // Date/heure toujours renseignées dès l'activation (valeurs par défaut si besoin) pour
+      // ne jamais laisser un RDV coché "en attente" et invisible tant que les deux champs
+      // ne sont pas remplis manuellement.
+      onUpdate({ rdv: { date: date || aujourdhui, heure: heure || '09:00', lieu } })
+    } else {
       onUpdate({ rdv: null })
     }
   }
@@ -311,8 +314,17 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate, onArchive, 
                   type="checkbox"
                   checked={rdvActif}
                   onChange={(e) => {
-                    setRdvActif(e.target.checked)
-                    applyRdv(e.target.checked, rdvDate, rdvHeure, rdvLieu)
+                    const actif = e.target.checked
+                    setRdvActif(actif)
+                    if (actif) {
+                      const date = rdvDate || aujourdhui
+                      const heure = rdvHeure || '09:00'
+                      setRdvDate(date)
+                      setRdvHeure(heure)
+                      applyRdv(true, date, heure, rdvLieu)
+                    } else {
+                      applyRdv(false, rdvDate, rdvHeure, rdvLieu)
+                    }
                   }}
                 />
                 <span className={`w-2 h-2 rounded-sm ${EVENEMENT_STYLE.rdv.bg}`} />
