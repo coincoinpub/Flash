@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
 import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import type { Dossier, Membre } from '../types'
+import { construireEvenements, EVENEMENT_STYLE } from '../lib/planning'
 import { Avatar } from './Avatar'
 
 interface Props {
@@ -15,6 +17,15 @@ interface Props {
 }
 
 export function DossierCard({ dossier, enCharge, onClick, onDragStart, onDragEnd, dragging, displayMode, compact }: Props) {
+  // Prochaine échéance planning du dossier (RDV, deadline, pose, livraison…) — recalculée à
+  // chaque changement de dossier, pour que la carte reflète immédiatement les dates modifiées
+  // dans la fiche détail plutôt que de rester figée sur la seule date de création.
+  const prochaineEcheance = useMemo(() => {
+    const evenements = construireEvenements([dossier])
+    if (evenements.length === 0) return null
+    return [...evenements].sort((a, b) => a.date.localeCompare(b.date))[0]
+  }, [dossier])
+
   if (compact) {
     return (
       <button
@@ -51,9 +62,16 @@ export function DossierCard({ dossier, enCharge, onClick, onDragStart, onDragEnd
       </div>
       <div className="font-semibold text-slate-800 dark:text-slate-100 text-base mt-1 leading-snug">{dossier.client}</div>
       <div className="text-slate-500 dark:text-slate-400 text-sm mt-0.5 leading-snug">{dossier.job}</div>
-      <div className="text-slate-400 dark:text-slate-500 text-[11px] mt-1.5">
-        {format(parseISO(dossier.date), 'dd MMM', { locale: fr })}
-        {dossier.rdv && <span className="ml-2 text-red-600 dark:text-red-400 font-medium">RDV {dossier.rdv.heure}</span>}
+      <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+        <span className="text-slate-400 dark:text-slate-500 text-[11px]">{format(parseISO(dossier.date), 'dd MMM', { locale: fr })}</span>
+        {prochaineEcheance && (
+          <span
+            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold ${EVENEMENT_STYLE[prochaineEcheance.type].bg} ${EVENEMENT_STYLE[prochaineEcheance.type].text}`}
+          >
+            {EVENEMENT_STYLE[prochaineEcheance.type].label} {format(parseISO(prochaineEcheance.date), 'dd MMM', { locale: fr })}
+            {prochaineEcheance.type === 'rdv' && dossier.rdv ? ` ${dossier.rdv.heure}` : ''}
+          </span>
+        )}
       </div>
     </button>
   )

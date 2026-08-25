@@ -11,7 +11,9 @@ interface Props {
   displayMode: boolean
 }
 
-const PLACES_PAR_DEMI_JOURNEE = 4
+// Hauteur de référence (visuelle) : 2 places par demi-journée. Au-delà, toutes les cartes
+// réelles s'affichent quand même — ce n'est qu'un minimum, pas un plafond.
+const PLACES_PAR_DEMI_JOURNEE = 2
 
 function EvenementChip({ ev, onSelectDossier }: { ev: Evenement; onSelectDossier: (dossier: Dossier) => void }) {
   const style = EVENEMENT_STYLE[ev.type]
@@ -39,8 +41,7 @@ function DemiJournee({
   zoneTampon: boolean
   onSelectDossier: (dossier: Dossier) => void
 }) {
-  const places = Array.from({ length: PLACES_PAR_DEMI_JOURNEE }, (_, i) => evenements[i] ?? null)
-  const overflow = evenements.length - PLACES_PAR_DEMI_JOURNEE
+  const placesVides = Math.max(0, PLACES_PAR_DEMI_JOURNEE - evenements.length)
 
   return (
     <div className={`rounded-md px-1 py-1 ${zoneTampon ? 'bg-orange-100 dark:bg-orange-950/40' : ''}`}>
@@ -58,16 +59,12 @@ function DemiJournee({
           </span>
         )}
       </div>
-      {places.map((ev, i) =>
-        ev ? (
-          <EvenementChip key={ev.id} ev={ev} onSelectDossier={onSelectDossier} />
-        ) : (
-          <div key={i} className="h-3.5 mb-1 border-b border-dashed border-slate-200 dark:border-slate-700/70" />
-        ),
-      )}
-      {overflow > 0 && (
-        <div className="text-[9px] text-slate-400 dark:text-slate-500 px-0.5">+{overflow} autre{overflow > 1 ? 's' : ''}</div>
-      )}
+      {evenements.map((ev) => (
+        <EvenementChip key={ev.id} ev={ev} onSelectDossier={onSelectDossier} />
+      ))}
+      {Array.from({ length: placesVides }, (_, i) => (
+        <div key={i} className="h-3.5 mb-1 border-b border-dashed border-slate-200 dark:border-slate-700/70" />
+      ))}
     </div>
   )
 }
