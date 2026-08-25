@@ -25,6 +25,9 @@ function EvenementChip({ ev, onSelectDossier }: { ev: Evenement; onSelectDossier
     >
       <div className="text-[11px] font-semibold uppercase tracking-wide opacity-90 truncate">{libelleEvenement(ev)}</div>
       <div className="text-base font-bold leading-tight truncate">{ev.client}</div>
+      {ev.type !== 'impression' && ev.dossier.job && (
+        <div className="text-sm leading-tight opacity-90 truncate italic">{ev.dossier.job}</div>
+      )}
       {ev.info && <div className="text-sm leading-tight opacity-90 truncate">{ev.info}</div>}
     </button>
   )
@@ -95,9 +98,9 @@ export function Planning({ dossiers, onSelectDossier, displayMode }: Props) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Planning — 3 semaines</h2>
-        <div className="flex flex-wrap gap-3 text-xs text-slate-600 dark:text-slate-400">
+      <div className={`flex mb-3 ${displayMode ? 'flex-col items-center gap-1.5' : 'items-center justify-between'}`}>
+        <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Planning</h2>
+        <div className="flex flex-wrap justify-center gap-3 text-xs text-slate-600 dark:text-slate-400">
           {(Object.keys(EVENEMENT_STYLE) as (keyof typeof EVENEMENT_STYLE)[]).map((type) => (
             <span key={type} className="flex items-center gap-1.5">
               <span className={`w-2.5 h-2.5 rounded-sm ${EVENEMENT_STYLE[type].bg}`} />

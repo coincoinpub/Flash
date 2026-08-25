@@ -57,15 +57,14 @@ function App() {
 
   return (
     <div className={`min-h-screen flex flex-col ${displayMode ? 'p-6' : 'p-4 md:p-6'}`}>
-      <header className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
-          <h1 className={`font-bold text-slate-900 dark:text-slate-100 ${displayMode ? 'text-3xl' : 'text-xl'}`}>
-            Flash Impression
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm">
-            Suivi des dossiers — imprimerie &amp; signalétique, Bergerac
-          </p>
-        </div>
+      <header
+        className={`flex flex-wrap items-center gap-3 mb-5 ${displayMode ? 'justify-center relative' : 'justify-between'}`}
+      >
+        <h1
+          className={`font-bold text-slate-900 dark:text-slate-100 ${displayMode ? 'text-3xl text-center' : 'text-xl'}`}
+        >
+          Flash <span className="font-normal text-slate-500 dark:text-slate-400">- imprimerie &amp; signalétique</span>
+        </h1>
 
         {!displayMode && (
           <div className="flex items-center gap-2 flex-wrap">
@@ -107,7 +106,7 @@ function App() {
           </div>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${displayMode ? 'absolute right-0' : ''}`}>
           <button
             type="button"
             onClick={toggleTheme}
@@ -127,14 +126,21 @@ function App() {
       </header>
 
       <main className="flex-1 flex flex-col gap-6">
-        <KanbanBoard
-          dossiers={dossiersFiltres}
-          membresParId={membresParId}
-          onReorder={reorderDossier}
-          onCardClick={(d) => setSelectedId(d.id)}
-          onCreateDossier={handleCreateDossier}
-          displayMode={displayMode}
-        />
+        <div>
+          <h2
+            className={`text-base font-semibold text-slate-800 dark:text-slate-100 mb-3 ${displayMode ? 'text-center' : ''}`}
+          >
+            CRM
+          </h2>
+          <KanbanBoard
+            dossiers={dossiersFiltres}
+            membresParId={membresParId}
+            onReorder={reorderDossier}
+            onCardClick={(d) => setSelectedId(d.id)}
+            onCreateDossier={handleCreateDossier}
+            displayMode={displayMode}
+          />
+        </div>
 
         <Planning dossiers={dossiersFiltres} onSelectDossier={(d) => setSelectedId(d.id)} displayMode={displayMode} />
       </main>

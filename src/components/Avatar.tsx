@@ -1,7 +1,14 @@
 import type { Membre } from '../types'
 
-export function Avatar({ membre, size = 'md' }: { membre: Membre | null | undefined; size?: 'sm' | 'md' | 'lg' }) {
-  const dims = size === 'sm' ? 'w-6 h-6 text-[10px]' : size === 'lg' ? 'w-10 h-10 text-sm' : 'w-7 h-7 text-xs'
+export function Avatar({ membre, size = 'md' }: { membre: Membre | null | undefined; size?: 'xs' | 'sm' | 'md' | 'lg' }) {
+  const dims =
+    size === 'xs'
+      ? 'w-4 h-4 text-[8px]'
+      : size === 'sm'
+        ? 'w-6 h-6 text-[10px]'
+        : size === 'lg'
+          ? 'w-10 h-10 text-sm'
+          : 'w-7 h-7 text-xs'
 
   if (!membre) {
     return (
@@ -26,7 +33,7 @@ export function Avatar({ membre, size = 'md' }: { membre: Membre | null | undefi
 }
 
 /** Pile de pastilles avatar qui se chevauchent — affiche tous les membres assignés. */
-export function AvatarStack({ membres, size = 'sm' }: { membres: Membre[]; size?: 'sm' | 'md' | 'lg' }) {
+export function AvatarStack({ membres, size = 'sm' }: { membres: Membre[]; size?: 'xs' | 'sm' | 'md' | 'lg' }) {
   if (membres.length === 0) return <Avatar membre={null} size={size} />
   return (
     <div className="flex items-center -space-x-1.5 shrink-0">

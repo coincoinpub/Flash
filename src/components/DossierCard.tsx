@@ -55,21 +55,21 @@ export function DossierCard({ dossier, assignes, onClick, onDragStart, onDragEnd
         dragging ? 'opacity-40' : ''
       } ${displayMode ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'}`}
     >
-      <div className="flex items-start justify-end gap-2">
-        <AvatarStack membres={assignes} size="sm" />
-      </div>
-      <div className="font-semibold text-slate-800 dark:text-slate-100 text-lg mt-1 leading-snug">{dossier.client}</div>
+      <div className="font-semibold text-slate-800 dark:text-slate-100 text-lg leading-snug">{dossier.client}</div>
       <div className="text-slate-500 dark:text-slate-400 text-sm mt-0.5 leading-snug">{dossier.job}</div>
-      <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
-        <span className="text-slate-400 dark:text-slate-500 text-[11px]">{format(parseISO(dossier.date), 'dd MMM', { locale: fr })}</span>
-        {prochaineEcheance && (
-          <span
-            className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold ${EVENEMENT_STYLE[prochaineEcheance.type].bg} ${EVENEMENT_STYLE[prochaineEcheance.type].text}`}
-          >
-            {EVENEMENT_STYLE[prochaineEcheance.type].label} {format(parseISO(prochaineEcheance.date), 'dd MMM', { locale: fr })}
-            {prochaineEcheance.type === 'rdv' && dossier.rdv ? ` ${dossier.rdv.heure}` : ''}
-          </span>
-        )}
+      <div className="flex items-end justify-between gap-2 mt-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+          <span className="text-slate-400 dark:text-slate-500 text-[11px]">{format(parseISO(dossier.date), 'dd MMM', { locale: fr })}</span>
+          {prochaineEcheance && (
+            <span
+              className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold ${EVENEMENT_STYLE[prochaineEcheance.type].bg} ${EVENEMENT_STYLE[prochaineEcheance.type].text}`}
+            >
+              {EVENEMENT_STYLE[prochaineEcheance.type].label} {format(parseISO(prochaineEcheance.date), 'dd MMM', { locale: fr })}
+              {prochaineEcheance.type === 'rdv' && dossier.rdv ? ` ${dossier.rdv.heure}` : ''}
+            </span>
+          )}
+        </div>
+        <AvatarStack membres={assignes} size="xs" />
       </div>
     </button>
   )

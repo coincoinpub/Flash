@@ -35,17 +35,19 @@ export function KanbanBoard({ dossiers, membresParId, onReorder, onCardClick, on
 
   return (
     <div className="flex gap-2 overflow-x-auto pb-1" style={{ minHeight: hauteur }}>
-      <div className="w-9 shrink-0 flex justify-center pt-0.5">
-        <button
-          type="button"
-          onClick={onCreateDossier}
-          className="w-9 h-9 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 flex items-center justify-center text-xl leading-none transition"
-          aria-label="Nouveau dossier"
-          title="Nouveau dossier"
-        >
-          +
-        </button>
-      </div>
+      {!displayMode && (
+        <div className="w-9 shrink-0 flex justify-center pt-0.5">
+          <button
+            type="button"
+            onClick={onCreateDossier}
+            className="w-9 h-9 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 flex items-center justify-center text-xl leading-none transition"
+            aria-label="Nouvelle carte"
+            title="Nouvelle carte"
+          >
+            +
+          </button>
+        </div>
+      )}
       <div
         className="grid gap-2 flex-1"
         style={{ gridTemplateColumns: `repeat(${TOUTES_COLONNES.length}, minmax(160px, 1fr))` }}

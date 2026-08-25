@@ -76,10 +76,13 @@ export function KanbanColumn({
         <span className="text-xs font-normal bg-white/60 dark:bg-black/20 rounded-full px-2 py-0.5 shrink-0">{total}</span>
       </div>
       <div className="flex-1 overflow-y-auto px-2 pt-2 pb-3">
-        {config.groupes.map((groupe) => {
+        {config.groupes.map((groupe, index) => {
           const items = dossiersParStatut[groupe.statut] ?? []
           return (
-            <div key={groupe.statut} className="mb-2">
+            <div
+              key={groupe.statut}
+              className={`mb-2 ${index > 0 ? 'pt-2 mt-1 border-t border-slate-200 dark:border-slate-700' : ''}`}
+            >
               {config.groupes.length > 1 && (
                 <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 px-1 mb-1 flex items-center gap-1.5">
                   <span className={`w-1.5 h-1.5 rounded-full ${classes.dot}`} />

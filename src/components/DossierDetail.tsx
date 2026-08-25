@@ -235,6 +235,7 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate, onArchive, 
             <EditableLine
               value={dossier.client}
               onSave={(client) => onUpdate({ client })}
+              placeholder="Nom du Client"
               alwaysVisiblePencil
               textClassName="text-lg font-semibold text-slate-800 dark:text-slate-100"
               inputClassName="text-lg font-semibold border border-indigo-400 rounded px-1.5 py-0.5 bg-white dark:bg-slate-800 dark:text-slate-100"

@@ -7,7 +7,7 @@ export function construireNouveauDossier(dossiers: Dossier[]): Dossier {
     id: `d-${Date.now()}`,
     reference: '',
     numeroClient: '',
-    client: 'Nouveau dossier',
+    client: '',
     job: '',
     statut: 'devis_a_faire',
     ordre: ordresDevis.length > 0 ? Math.min(...ordresDevis) - 1 : 0,
