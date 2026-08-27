@@ -7,7 +7,8 @@ export const STATUT_COULEUR: Record<Statut, StatutCouleur> = {
   devis_en_cours: 'bleu',
   pao_a_faire: 'violet',
   pao_en_cours: 'violet',
-  a_imprimer: 'ambre',
+  a_imprimer_bat: 'ambre',
+  a_imprimer_prod: 'ambre',
   a_facturer: 'bleu',
   livre: 'vert',
   archive: 'gris',
@@ -87,7 +88,15 @@ export const COLONNES: ColonneConfig[] = [
       { statut: 'pao_en_cours', label: 'En cours' },
     ],
   },
-  { key: 'a_imprimer', titre: 'À imprimer', couleur: 'ambre', groupes: [{ statut: 'a_imprimer', label: 'À imprimer' }] },
+  {
+    key: 'a_imprimer',
+    titre: 'À imprimer',
+    couleur: 'ambre',
+    groupes: [
+      { statut: 'a_imprimer_bat', label: 'BAT' },
+      { statut: 'a_imprimer_prod', label: 'En prod' },
+    ],
+  },
   { key: 'a_facturer', titre: 'À facturer', couleur: 'bleu', groupes: [{ statut: 'a_facturer', label: 'À facturer' }] },
 ]
 

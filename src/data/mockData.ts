@@ -29,6 +29,7 @@ const DEFAUTS = {
   poseExtInfo: '',
   poseIntMoment: 'apres_midi' as const,
   poseIntInfo: '',
+  piecesJointes: [],
 }
 
 export const DOSSIERS: Dossier[] = [
@@ -244,7 +245,7 @@ export const DOSSIERS: Dossier[] = [
     numeroClient: '112455',
     client: 'Boulangerie Lacoste',
     job: 'Banderole "Ouverture"',
-    statut: 'a_imprimer',
+    statut: 'a_imprimer_prod',
     date: iso(-14),
     commercialIds: ['stephane'],
     paoIds: ['david'],
@@ -267,7 +268,7 @@ export const DOSSIERS: Dossier[] = [
     numeroClient: '112402',
     client: 'Collège Jean Moulin',
     job: 'Bâche évènementielle',
-    statut: 'a_imprimer',
+    statut: 'a_imprimer_bat',
     date: iso(-16),
     commercialIds: ['fred'],
     paoIds: ['emilien'],

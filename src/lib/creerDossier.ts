@@ -31,5 +31,6 @@ export function construireNouveauDossier(dossiers: Dossier[]): Dossier {
     poseIntMoment: 'apres_midi',
     poseIntInfo: '',
     commentaire: '',
+    piecesJointes: [],
   }
 }

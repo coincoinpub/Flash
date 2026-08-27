@@ -3,7 +3,8 @@ export type Statut =
   | 'devis_en_cours'
   | 'pao_a_faire'
   | 'pao_en_cours'
-  | 'a_imprimer'
+  | 'a_imprimer_bat'
+  | 'a_imprimer_prod'
   | 'a_facturer'
   | 'livre'
   | 'archive'
@@ -13,7 +14,8 @@ export const STATUTS: Statut[] = [
   'devis_en_cours',
   'pao_a_faire',
   'pao_en_cours',
-  'a_imprimer',
+  'a_imprimer_bat',
+  'a_imprimer_prod',
   'a_facturer',
   'livre',
   'archive',
@@ -24,7 +26,8 @@ export const STATUT_LABEL: Record<Statut, string> = {
   devis_en_cours: 'Devis en cours',
   pao_a_faire: 'PAO à faire',
   pao_en_cours: 'PAO en cours',
-  a_imprimer: 'À imprimer',
+  a_imprimer_bat: 'BAT',
+  a_imprimer_prod: 'En prod',
   a_facturer: 'À facturer',
   livre: 'Livré',
   archive: 'Archivé',
@@ -50,6 +53,17 @@ export interface Rdv {
 
 // Demi-journée d'un évènement du planning
 export type Moment = 'matin' | 'apres_midi'
+
+// Fichier joint à un dossier (logo, photo, devis, facture, BAT…), stocké sur le Google Drive
+// du compte crm.flashimpression@gmail.com — voir SETUP.md.
+export interface PieceJointe {
+  id: string
+  nom: string
+  url: string
+  mimeType: string
+  taille: number // octets
+  ajouteLe: string // yyyy-MM-dd
+}
 
 export interface Dossier {
   id: string
@@ -79,4 +93,5 @@ export interface Dossier {
   poseIntMoment: Moment
   poseIntInfo: string
   commentaire: string
+  piecesJointes: PieceJointe[]
 }

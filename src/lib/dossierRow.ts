@@ -1,7 +1,7 @@
 // Conversion entre le type Dossier (camelCase, utilisé dans toute l'app) et la ligne Supabase
 // (snake_case, table `dossiers`). Fichier pur (pas de dépendance Vite) pour être importable
 // aussi bien depuis le frontend que depuis les fonctions serverless (api/).
-import type { Dossier, Moment, Statut } from '../types'
+import type { Dossier, Moment, PieceJointe, Statut } from '../types'
 
 export interface GoogleEventIds {
   rdv?: string
@@ -40,6 +40,7 @@ export interface DossierRow {
   pose_int_moment: string
   pose_int_info: string
   commentaire: string
+  pieces_jointes: PieceJointe[]
   google_event_ids: GoogleEventIds
   updated_at?: string
 }
@@ -73,6 +74,7 @@ export function dossierToRow(d: Dossier): Omit<DossierRow, 'updated_at'> {
     pose_int_moment: d.poseIntMoment,
     pose_int_info: d.poseIntInfo,
     commentaire: d.commentaire,
+    pieces_jointes: d.piecesJointes,
     google_event_ids: {},
   }
 }
@@ -105,6 +107,7 @@ const COLONNE_PAR_CLE: Record<keyof Dossier, keyof DossierRow> = {
   poseIntMoment: 'pose_int_moment',
   poseIntInfo: 'pose_int_info',
   commentaire: 'commentaire',
+  piecesJointes: 'pieces_jointes',
 }
 
 // Ne convertit que les clés présentes dans le patch (mise à jour partielle Supabase), pour ne
@@ -147,5 +150,6 @@ export function rowToDossier(r: DossierRow): Dossier {
     poseIntMoment: r.pose_int_moment as Moment,
     poseIntInfo: r.pose_int_info,
     commentaire: r.commentaire,
+    piecesJointes: r.pieces_jointes ?? [],
   }
 }

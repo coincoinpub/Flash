@@ -33,6 +33,9 @@ const SCOPES = [
   'https://www.googleapis.com/auth/calendar',
   'https://www.googleapis.com/auth/spreadsheets',
   'https://www.googleapis.com/auth/gmail.send',
+  // drive.file : accès limité aux fichiers créés par l'app elle-même (pièces jointes),
+  // pas à tout le Drive du compte.
+  'https://www.googleapis.com/auth/drive.file',
 ]
 
 const authUrl = oauth2Client.generateAuthUrl({

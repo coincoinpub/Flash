@@ -29,6 +29,11 @@ export function getGmailClient() {
   return auth ? google.gmail({ version: 'v1', auth }) : null
 }
 
+export function getDriveClient() {
+  const auth = getGoogleAuth()
+  return auth ? google.drive({ version: 'v3', auth }) : null
+}
+
 // L'API Gmail attend un message MIME encodé en base64url. Construit un email HTML simple.
 export function buildRawEmail(options: { from: string; to: string; subject: string; html: string }) {
   const { from, to, subject, html } = options

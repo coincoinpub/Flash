@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { format } from 'date-fns'
-import type { Dossier, Membre, Moment, Statut } from '../types'
+import type { Dossier, Membre, Moment, PieceJointe, Statut } from '../types'
 import { STATUT_LABEL, STATUTS } from '../types'
 import { COULEUR_CLASSES, STATUT_COULEUR } from '../lib/statutConfig'
 import { EVENEMENT_STYLE, placeholderInfo } from '../lib/planning'
@@ -104,6 +104,134 @@ function DateMomentInfo({
           pencilClassName="text-slate-400 dark:text-slate-500"
         />
       )}
+    </div>
+  )
+}
+
+function formatTaille(octets: number): string {
+  if (octets < 1024) return `${octets} o`
+  if (octets < 1024 * 1024) return `${Math.round(octets / 1024)} Ko`
+  return `${(octets / (1024 * 1024)).toFixed(1)} Mo`
+}
+
+function iconePiece(mimeType: string): string {
+  if (mimeType.startsWith('image/')) return '🖼️'
+  if (mimeType === 'application/pdf') return '📄'
+  return '📎'
+}
+
+function fichierEnBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve((reader.result as string).split(',')[1] ?? '')
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+}
+
+function PiecesJointesSection({
+  dossier,
+  onUpdate,
+}: {
+  dossier: Dossier
+  onUpdate: (patch: Partial<Dossier>) => void
+}) {
+  const [envoiEnCours, setEnvoiEnCours] = useState(false)
+  const [erreur, setErreur] = useState<string | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const ajouter = async (file: File) => {
+    setEnvoiEnCours(true)
+    setErreur(null)
+    try {
+      const contenuBase64 = await fichierEnBase64(file)
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dossierId: dossier.id,
+          nom: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          contenuBase64,
+        }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(data?.error ?? "échec de l'envoi")
+      onUpdate({ piecesJointes: data.piecesJointes as PieceJointe[] })
+    } catch (err) {
+      setErreur(err instanceof Error ? err.message : "échec de l'envoi")
+    } finally {
+      setEnvoiEnCours(false)
+    }
+  }
+
+  const supprimer = async (piece: PieceJointe) => {
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dossierId: dossier.id, pieceId: piece.id }),
+      })
+      const data = await res.json().catch(() => null)
+      if (res.ok) onUpdate({ piecesJointes: data.piecesJointes as PieceJointe[] })
+    } catch {
+      // best effort
+    }
+  }
+
+  return (
+    <div className="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-2">
+      <div className={LABEL_CLASS}>Pièces jointes</div>
+
+      {dossier.piecesJointes.length > 0 && (
+        <ul className="space-y-1">
+          {dossier.piecesJointes.map((piece) => (
+            <li
+              key={piece.id}
+              className="flex items-center gap-2 text-sm bg-slate-50 dark:bg-slate-800/60 rounded-md px-2.5 py-1.5"
+            >
+              <span className="shrink-0">{iconePiece(piece.mimeType)}</span>
+              <a
+                href={piece.url}
+                target="_blank"
+                rel="noreferrer"
+                className="truncate flex-1 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline"
+              >
+                {piece.nom}
+              </a>
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 shrink-0">{formatTaille(piece.taille)}</span>
+              <button
+                type="button"
+                onClick={() => supprimer(piece)}
+                className="shrink-0 text-slate-400 hover:text-red-600 dark:hover:text-red-400 rounded p-0.5"
+                aria-label={`Supprimer ${piece.nom}`}
+              >
+                ✕
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          e.target.value = ''
+          if (file) ajouter(file)
+        }}
+      />
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={envoiEnCours}
+        className="text-sm font-medium text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-600 rounded-md px-3 py-1.5 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 disabled:opacity-50"
+      >
+        {envoiEnCours ? 'Envoi…' : '+ Ajouter un fichier'}
+      </button>
+      {erreur && <div className="text-xs text-red-600 dark:text-red-400">{erreur}</div>}
     </div>
   )
 }
@@ -408,6 +536,8 @@ export function DossierDetail({ dossier, membres, onClose, onUpdate, onArchive, 
               onChange={(e) => setCommentaire(e.target.value)}
             />
           </div>
+
+          <PiecesJointesSection dossier={dossier} onUpdate={onUpdate} />
         </div>
 
         <div className="flex items-center justify-between gap-2 px-5 py-3 border-t border-slate-200 dark:border-slate-700 shrink-0">

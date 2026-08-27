@@ -4,7 +4,8 @@ Ce document liste les étapes à faire une seule fois pour activer :
 - une base de données partagée (tout le monde voit les mêmes dossiers, en direct) ;
 - la synchro automatique de la Planification vers **Google Agenda** ;
 - un export automatique vers un **Google Sheet** ;
-- un **récap email quotidien à 8h30** (RDV, jobs, poses, livraisons, deadlines du jour).
+- un **récap email quotidien à 8h30** (RDV, jobs, poses, livraisons, deadlines du jour) ;
+- les **pièces jointes** des fiches (logo, photo, devis, facture, BAT…), stockées sur **Google Drive**.
 
 Tout le code est déjà écrit et poussé sur la branche. Tant que les variables ci-dessous ne sont
 pas renseignées dans Vercel, l'app continue de fonctionner exactement comme avant (localStorage,
@@ -30,10 +31,11 @@ branchements/tests.
 1. Connecte-toi sur [console.cloud.google.com](https://console.cloud.google.com) **avec le
    compte crm.flashimpression@gmail.com**.
 2. Crée un projet (ex. "Flash Impression CRM").
-3. **APIs & Services → Library** → active ces 3 API :
+3. **APIs & Services → Library** → active ces 4 API :
    - Google Calendar API
    - Google Sheets API
    - Gmail API
+   - Google Drive API
 4. **APIs & Services → OAuth consent screen** :
    - Type "External", statut "Testing" suffit (pas besoin de validation Google).
    - Ajoute `crm.flashimpression@gmail.com` comme "Test user".
@@ -53,7 +55,7 @@ GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy node scripts/get-google-refresh-to
 ```
 
 Ouvre l'URL affichée, connecte-toi avec **crm.flashimpression@gmail.com**, accepte les
-autorisations (Agenda, Sheets, envoi d'email). Le terminal affiche le refresh token → note-le.
+autorisations (Agenda, Sheets, envoi d'email, Drive). Le terminal affiche le refresh token → note-le.
 
 → `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`
 
@@ -81,6 +83,7 @@ listées dans `.env.example` (Production + Preview) :
 | `GOOGLE_REFRESH_TOKEN` | depuis le script |
 | `GOOGLE_CALENDAR_ID` | `primary` |
 | `GOOGLE_SHEET_ID` | ID du Google Sheet |
+| `GOOGLE_DRIVE_FOLDER_ID` | optionnel, laisser vide (racine du Drive) |
 | `RAPPEL_DESTINATAIRE` | `crm.flashimpression@gmail.com` |
 | `CRON_SECRET` | une valeur aléatoire de ton choix (ex. générée sur [1password.com/password-generator](https://1password.com/password-generator/)) |
 
@@ -107,3 +110,7 @@ nouvelles variables soient prises en compte.
 - **Rappels par personne** : pour l'instant le récap est global sur une seule boîte mail, comme
   demandé. Le jour où tu veux un récap personnalisé par membre de l'équipe, il faudra leur email
   dans la fiche équipe — dis-le-moi.
+- **Taille des pièces jointes** : environ 3 Mo par fichier (limite technique de la fonction qui
+  reçoit l'upload). Suffisant pour un PDF de devis/facture/BAT ou une photo, mais pas pour un
+  fichier Illustrator/InDesign natif — dis-le-moi si tu as besoin de plus, il y a une autre façon
+  de faire mais elle demande un peu plus de travail.

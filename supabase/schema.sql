@@ -38,6 +38,9 @@ create table if not exists dossiers (
   pose_int_moment text not null default 'apres_midi',
   pose_int_info text not null default '',
   commentaire text not null default '',
+  -- Fichiers joints (logo, photo, devis, facture, BAT…) uploadés sur le Google Drive du
+  -- compte crm.flashimpression@gmail.com — voir api/upload.ts.
+  pieces_jointes jsonb not null default '[]',
   -- id de l'évènement Google Calendar créé pour chaque type de planification, pour pouvoir
   -- le mettre à jour/supprimer plutôt que d'en recréer un à chaque modification.
   google_event_ids jsonb not null default '{}',
